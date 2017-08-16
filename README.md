@@ -1,7 +1,7 @@
 ArqClienteServidorWeb 
 ======================
 
-#Version 1.0 15/08/2017 
+# Version 1.0 15/08/2017 
 
 1 - Descripcion
 ---------------
@@ -10,19 +10,19 @@ Un servidor web solicitará dicha informacion a este proceso para responder a la
 
 El cliente será capaz de solicitar :
 
-*Una lista detallada de todos los dispositivos conectados a la computadora.
-*Escribir archivos en cualquier dispositivo USB conectado a la computadora.
-*Leer archivo de cualquier dispositivo USB conectado a la computadora.
+* Una lista detallada de todos los dispositivos conectados a la computadora.
+* Escribir archivos enviados por el cliente en cualquier dispositivo USB conectado a la computadora .
+* Leer archivo de cualquier dispositivo USB conectado a la computadora y enviarlo al cliente que solicite dicho archivo.
 
 
-Escribir un archivo recibido desde cliente y escribirlo en un dispositivo USB
-3. Leer un archivo en uno de los dispositivos USB, y enviárselo al cliente.
+
 2 - Instalacion
 ----------------
 Para en funcionamiento de este programa es necesario contar con las siguientes librerias:
-*Libreria 
-*Libreria
-*Libreria 
+
+* Libreria 
+* Libreria
+* Libreria 
 
 ```
 pip install 
