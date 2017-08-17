@@ -1,8 +1,12 @@
 INCLUDE=-Iinclude/
 LIBS=-Llib/
-programa: ./src/daemonUSB.c ./src/ServidorWeb.c
-	gcc -Wall -pthread ./src/daemonUSB.c -o ./bin/daemonUSB
-	gcc -Wall -pthread ./src/ServidorWeb.c -o ./bin/ServidorWeb
+programa: enumerar_disp_alm_masivo.o src/daemonUSB.c src/ServidorWeb.c
+	gcc -Wall -c -ludev  -pthread -Iinclude/ src/daemonUSB.c -o obj/daemonUSB.o
+	gcc -Wall -c -pthread src/ServidorWeb.c -o obj/ServidorWeb.o
+	gcc -Wall -Iinclude/ obj/*.o -ludev -o bin/programa
+
+enumerar_disp_alm_masivo.o: src/enumerar_disp_alm_masivo.c
+	gcc -Wall -c  -Iinclude/ -ludev src/enumerar_disp_alm_masivo.c -o obj/enumerar_disp_alm_masivo.o
 
 
 .PHONY: clean

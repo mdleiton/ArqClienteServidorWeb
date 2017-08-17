@@ -20,12 +20,12 @@ El cliente será capaz de solicitar :
 ----------------
 Para en funcionamiento de este programa es necesario contar con las siguientes librerias:
 
-* Libreria 
+* Libreria libudev
 * Libreria
 * Libreria 
 
 ```
-pip install 
+apt-get install libudev-dev
 ```
 
 3 - Uso general
