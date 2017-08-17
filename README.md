@@ -26,7 +26,7 @@ Para en funcionamiento de este programa es necesario contar con las siguientes l
 
 ```
 sudo apt-get install libudev-dev
-sudo apt-get install libmicrohttpd
+sudo apt-get install libmicrohttpd*
 ```
 
 3 - Uso general
