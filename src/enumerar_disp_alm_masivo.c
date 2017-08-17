@@ -39,6 +39,8 @@ void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
 	struct udev_list_entry *entrada;
 
 	//Recorremos la lista obtenida
+	char *concat_str = (char *)malloc(200);
+	int n=0;
 	udev_list_entry_foreach(entrada, dispositivos) {
 		const char* ruta = udev_list_entry_get_name(entrada);
 		struct udev_device* scsi = udev_device_new_from_syspath(udev, ruta);
@@ -51,13 +53,14 @@ void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
 			= udev_device_get_parent_with_subsystem_devtype(scsi, "usb", "usb_device");
 
 		if (block && scsi_disk && usb) {
-			printf("block = %s, usb = %s:%s, scsi = %s\n",
+			n=sprintf(concat_str, "block = %s, usb = %s:%s, scsi = %s\n", 
 				udev_device_get_devnode(block),
 				udev_device_get_sysattr_value(usb, "idVendor"),
 				udev_device_get_sysattr_value(usb, "idProduct"),
 				udev_device_get_sysattr_value(scsi, "vendor"));
+			//fwrite(concat_str, CONCAT_LEN, 1, fptr);
+			write (logsdaemon, concat_str, n);
 		}
-		write (logsdaemon, "Apache running\n", 15);
 		if (block) {
 			udev_device_unref(block);
 		}
@@ -67,5 +70,8 @@ void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
 		}
 		udev_device_unref(scsi);
 	}
+	if(n==0){
+			write (logsdaemon, "no hay dispositivo conectado \n", 30);
+		}
 	udev_enumerate_unref(enumerar);
 }
