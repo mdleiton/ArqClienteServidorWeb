@@ -1,7 +1,7 @@
 INCLUDE=-Iinclude/
 LIBS=-Llib/
 programa: enumerar_disp_alm_masivo.o src/daemonUSB.c src/ServidorWeb.c
-	gcc -Wall -c -ludev  -pthread -Iinclude/ src/daemonUSB.c -o obj/daemonUSB.o
+	gcc -Wall -c -I$PATH_TO_LIBMHD_INCLUDES -L$PATH_TO_LIBMHD_LIBS -lmicrohttpd -ludev  -pthread -Iinclude/  src/daemonUSB.c -o obj/daemonUSB.o
 	gcc -Wall -c -pthread src/ServidorWeb.c -o obj/ServidorWeb.o
 	gcc -Wall -Iinclude/ obj/*.o -ludev -o bin/programa
 

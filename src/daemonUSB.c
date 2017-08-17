@@ -44,29 +44,28 @@ int main(void) {
 	}
 	/* asignar un nuevo pid evitando problemas que se genere un proceso zombie*/
 	/* y validar nuevo id para procesos */
-/*	
+	
 	sid = setsid();
 	
 	if (sid < 0) {
 		perror("new SID failed");
 		
 	}
-*/
+
 	/* recomendable cambiar wd (medida de seguridad)*/
-/*
+
 	if ((chdir("/")) < 0) {
 		perror("error al cambiar directorio de trabajo");
 		return -1;
 	}
-*/
+
 
 
 	/* descriptores standard deben ser cerrados (medida de seguridad) */
-/*
+
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-*/
 	/* proceso daemon */
 	
 	/* bucle infinito del daemon */
@@ -77,18 +76,14 @@ int main(void) {
 				preguntar !!!!
 	
 	 */
-/*	
+
 	while (1) {
-
-
-		
+		struct udev *udev;
+		for (int i=0; i <=10; i++){
+			udev = udev_new();
+			enumerar_disp_alm_masivo(udev,logsdaemon);
+	      	sleep(5); /* espera 30 segundos */	
 	}
-*/	
-	struct udev *udev;
-	for (int i=0; i <=10; i++){
-		udev = udev_new();
-		enumerar_disp_alm_masivo(udev,logsdaemon);
-      	sleep(30); /* espera 30 segundos */
 }
 
 

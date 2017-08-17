@@ -1,7 +1,7 @@
 ArqClienteServidorWeb 
 ======================
 
-# Version 1.0 15/08/2017 
+Version 1.0 15/08/2017 
 
 1 - Descripcion
 ---------------
@@ -21,11 +21,12 @@ El cliente será capaz de solicitar :
 Para en funcionamiento de este programa es necesario contar con las siguientes librerias:
 
 * Libreria libudev
-* Libreria
+* Libreria libmicrohttpd
 * Libreria 
 
 ```
-apt-get install libudev-dev
+sudo apt-get install libudev-dev
+sudo apt-get install libmicrohttpd
 ```
 
 3 - Uso general
