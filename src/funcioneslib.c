@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <unistd.h>
+#include <mntent.h>
+#include <errno.h>
+#include <string.h>
 
 struct udev_device* obtener_hijo(struct udev* udev, struct udev_device* padre, const char* subsistema){
 	struct udev_device* hijo = NULL;
@@ -74,4 +77,32 @@ void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
 			write (logsdaemon, "no hay dispositivo conectado \n", 30);
 		}
 	udev_enumerate_unref(enumerar);
+}
+
+void presentar_estructuraMNTENT(const struct mntent *fs){
+	printf("nodo :%s \n direccion logica :%s \n %s \n %s \n %d \n %d\n",
+		fs->mnt_fsname,  /* name of mounted filesystem(es el nodo del dispositivo) */
+		fs->mnt_dir,    /* filesystem path prefix (el directorio donde está montado.)*/
+		fs->mnt_type,	/* mount type  */
+		fs->mnt_opts,	/* mount options  */
+		fs->mnt_freq,	/* dump frequency in days */
+		fs->mnt_passno);	/* pass number on parallel fsck */
+}
+
+void direccionDispositivo(const char *filename,const char *direccion_fisica){
+	FILE *fp;
+	struct mntent *fs;
+	/*function opens the filesystem description file filename and returns a file pointer*/
+	fp = setmntent(filename, "r");
+	if (fp == NULL) {
+		fprintf(stderr, " %s: error al intentar abrir el archivo: %s\n", filename, strerror(errno));
+		exit(1);
+	}
+	/* que leerá UNA linea del mtab, y les devolverá una estructura:*/
+	while ((fs = getmntent(fp)) != NULL){
+		if(strcmp(fs->mnt_fsname,direccion_fisica)==0){
+			presentar_estructuraMNTENT(fs);
+		}
+	}
+	endmntent(fp);
 }

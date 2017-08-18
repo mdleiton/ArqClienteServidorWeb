@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libudev.h>
+#include <stdio.h>
+#include <mntent.h>
 #include "Monitor.h"
 
 int main(void) {
@@ -59,8 +61,6 @@ int main(void) {
 		return -1;
 	}
 
-
-
 	/* descriptores standard deben ser cerrados (medida de seguridad) */
 
 	close(STDIN_FILENO);
@@ -71,24 +71,23 @@ int main(void) {
 	/* bucle infinito del daemon */
 	/* aqui debe escanear constantemente la PC para verificar si existen nuevos dispositivos USB 
 	conectados y 
-	 				preguntar!!!!
-	debera escribir ya sea el fichero log de arriba o en el json 
-				preguntar !!!!
 	
 	 */
-
+/*
 	while (1) {
 		struct udev *udev;
-		for (int i=0; i <=10; i++){
-			udev = udev_new();
-			enumerar_disp_alm_masivo(udev,logsdaemon);
-	      	sleep(5); /* espera 30 segundos */	
-	}
+		udev = udev_new();
+		enumerar_disp_alm_masivo(udev,logsdaemon);
+      	sleep(5); 	
+	}	
+*/
+
+	/*prueba pequena */
+	struct udev *udev;
+	for(int i=0; i<=10; i++){
+		udev = udev_new();
+		enumerar_disp_alm_masivo(udev,logsdaemon);
+		sleep(5); 
 }
-
-
-
-	
-	
 	return -1; //borrar cuando creamos daemon
 }
