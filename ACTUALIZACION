@@ -1,11 +1,10 @@
-no hay dispositivo conectado 
-no hay dispositivo conectado 
-no hay dispositivo conectado 
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
-block = /dev/sdb, usb = 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston
+nodo = /dev/sdb,El punto de montaje = /media/leiton/UBUNTU 17_0, id(idVendor:idProduct)= 0930:6545, scsi = Kingston

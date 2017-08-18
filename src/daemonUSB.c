@@ -66,28 +66,30 @@ int main(void) {
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-	/* proceso daemon */
 	
+
+	/* proceso daemon */
 	/* bucle infinito del daemon */
 	/* aqui debe escanear constantemente la PC para verificar si existen nuevos dispositivos USB 
 	conectados y 
-	
 	 */
-/*
+
 	while (1) {
 		struct udev *udev;
 		udev = udev_new();
 		enumerar_disp_alm_masivo(udev,logsdaemon);
       	sleep(5); 	
 	}	
-*/
+
 
 	/*prueba pequena */
+	/*
 	struct udev *udev;
 	for(int i=0; i<=10; i++){
 		udev = udev_new();
 		enumerar_disp_alm_masivo(udev,logsdaemon);
 		sleep(5); 
 }
+*/
 	return -1; //borrar cuando creamos daemon
 }
