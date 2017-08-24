@@ -9,8 +9,8 @@ funcioneslib.o: src/funcioneslib.c
 daemonUSB.o: src/daemonUSB.c
 	gcc -Wall -c  -ludev  -pthread -Iinclude/  src/daemonUSB.c -o obj/daemonUSB.o
 
-ServidorWeb.o: src/ServidorWeb.c
-	gcc -Wall -c -I$PATH_TO_LIBMHD_INCLUDES -L$PATH_TO_LIBMHD_LIBS -lmicrohttpd -pthread src/ServidorWeb.c -o obj/ServidorWeb1.o
+ServidorWeb: src/ServidorWeb.c
+	gcc -Wall  -I$PATH_TO_LIBMHD_INCLUDES -L$PATH_TO_LIBMHD_LIBS -lmicrohttpd src/ServidorWeb.c -o bin/ServidorWeb
 
 .PHONY: clean
 clean:
