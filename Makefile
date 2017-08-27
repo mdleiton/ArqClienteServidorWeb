@@ -12,3 +12,7 @@ daemonUSB.o: src/daemonUSB.c
 ServidorWeb: src/ServidorWeb.c
 	gcc src/ServidorWeb.c -o bin/ServidorWeb -I$PATH_TO_LIBMHD_INCLUDES -L$PATH_TO_LIBMHD_LIBS -lmicrohttpd
 	gcc src/ServidorWeb1.c -o bin/ServidorWeb1 -I$PATH_TO_LIBMHD_INCLUDES -L$PATH_TO_LIBMHD_LIBS -lmicrohttpd
+
+.PHONY: clean
+clean:
+	rm -rf obj/* bin/* lib/*
