@@ -24,8 +24,7 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
 
 int main (){
   	struct MHD_Daemon *daemon;
-
-  	daemon = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,&answer_to_connection,NULL,MD_OPON_NOTIFY_COMPLETED, request_completed,
+	daemon = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,&answer_to_connection,NULL,MHD_OPTION_NOTIFY_COMPLETED, request_completed,
                              NULL, MHD_OPTION_END);
   	if (NULL == daemon) return 1;
 
