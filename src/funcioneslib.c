@@ -8,6 +8,7 @@
 #include <string.h>
 
 /* permite presentar toda la estructura de una dispositivo usb conectado a la pc*/
+
 void presentar_estructuraMNTENT(const struct mntent *fs){
 	printf("nodo :%s \n direccion logica :%s \n %s \n %s \n %d \n %d\n",
 		fs->mnt_fsname,  /* name of mounted filesystem(es el nodo del dispositivo) */
