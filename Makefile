@@ -15,4 +15,4 @@ ServidorWeb: src/ServidorWeb.c
 
 .PHONY: clean
 clean:
-	rm -rf obj/* bin/* lib/*
+	rm -rf obj/* bin/* lib/* ACTUALIZACION
