@@ -9,3 +9,8 @@ if r.status_code == 200:
 # Creamos la peticion HTTP tipo post:
 print('segundo tipo e solicitud') 
 contenido = {'name': 'data'}
+r = requests.post("http://127.0.0.1:8888/", data=json.dumps(contenido))
+if r.status_code == 200:
+    print r.text
+    print r.url
+    print r.headers
