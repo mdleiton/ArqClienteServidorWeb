@@ -1,5 +1,3 @@
-INCLUDE=-Iinclude/
-LIBS=-Llib/
 procesodaemon: funcioneslib.o daemonUSB.o
 	gcc -Wall -Iinclude/ obj/*[!1].o -ludev -o bin/programa
 
@@ -10,8 +8,3 @@ daemonUSB.o: src/daemonUSB.c
 	gcc -Wall -c  -ludev  -pthread -Iinclude/  src/daemonUSB.c -o obj/daemonUSB.o
 
 ServidorWeb: src/ServidorWeb.c
-	gcc -Wall  -I$PATH_TO_LIBMHD_INCLUDES -L$PATH_TO_LIBMHD_LIBS -lmicrohttpd src/ServidorWeb.c -o bin/ServidorWeb
-
-.PHONY: clean
-clean:
-	rm -rf obj/* bin/* lib/*
