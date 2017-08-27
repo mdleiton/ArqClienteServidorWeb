@@ -5,3 +5,7 @@ r = requests.get("http://127.0.0.1:8888/", params = {"w":"774508"})
 if r.status_code == 200:
     #print r.text
     print("good connection")
+
+# Creamos la peticion HTTP tipo post:
+print('segundo tipo e solicitud') 
+contenido = {'name': 'data'}
