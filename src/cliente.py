@@ -14,3 +14,6 @@ if r.status_code == 200:
     print r.text
     print r.url
     print r.headers
+    print r.status_code
+    print r.encoding
+    print r.json
