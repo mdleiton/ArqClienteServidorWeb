@@ -21,6 +21,14 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
 	    const char* value = MHD_lookup_connection_value(connection, MHD_GET_ARGUMENT_KIND, "data");
 	    printf("PROCESANDO value: %s\n",value);
 	 }
+	//procesando solicitud tipo post
+	if (0 == strcmp (method, "POST")){
+   		printf ("PROCESANDO SOLICUTUD POST \n");
+	    struct connection_info_struct *con_info = *con_cls;
+	    if (*upload_data_size != 0){
+		return MHD_YES;
+	      }
+	  }
 	response = MHD_create_response_from_buffer (strlen (page),(void*) page, MHD_RESPMEM_PERSISTENT);
 	ret = MHD_queue_response (connection, MHD_HTTP_OK, response);
 	MHD_destroy_response (response);
