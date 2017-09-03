@@ -75,7 +75,44 @@ int connect_retry( int domain, int type, int protocol,  const struct sockaddr *a
   return(-1); 
 }
 
-
+char* init_cliente(char *solicitud){ 
+  int sockfd,filefd; 
+  int puerto =8888;
+  struct sockaddr_in direccion_cliente;
+  memset(&direccion_cliente, 0, sizeof(direccion_cliente)); 
+  direccion_cliente.sin_family = AF_INET;   //IPv4
+  direccion_cliente.sin_port = htons(puerto);   //Convertimos el numero de puerto al endianness de la red
+  direccion_cliente.sin_addr.s_addr = inet_addr("127.0.0.1") ;  //Nos tratamos de conectar a esta direccion
+  if (( sockfd = connect_retry( direccion_cliente.sin_family, SOCK_STREAM, 0, (struct sockaddr *)&direccion_cliente, sizeof(direccion_cliente))) < 0) { 
+    printf("falló conexión con el proceso daemonUSB . \n Verifique que no existen ningun proceso daemonUSB ejecutando y vuelva a ejecutar el daemon\n"); 
+    return "\"str_error\":\"ERROR:falló conexión con el proceso daemonUSB . Verifique que no existen ningun proceso daemonUSB ejecutando y vuelva a ejecutar el daemon\"\n";
+  } 
+  send(sockfd,solicitud,BUFLEN,0);
+  printf("Solicitud enviada proceso daemon: %s \n",solicitud);
+  int n=0;    
+  char *file = malloc(BUFFERING*sizeof(char *));
+  memset(file,0,BUFFERING);
+  printf("procesando respuesta del daemon\n");
+  if((n=recv(sockfd, file, BUFFERING,0))>0){
+    if (strstr(file, "ERROR") != NULL) {
+      printf("ERROR: al recibir respuesta del daemon\n");
+      close(sockfd);
+      return "\"str_error\":\"ERROR:al recibir respuesta del daemon\"\n";
+    }
+    printf("respuesta del daemonUSB:\n %s\n",file);
+    close(sockfd);
+    return file;
+  }
+  if (n <= 0){
+    printf("Error al transferir la informacion\n");
+    close(sockfd);
+    return "\"str_error\":\"ERROR:al transferir la informacion\"\n";
+  }  
+  memset(file,0,BUFFERING);
+  free(file);
+  close(sockfd);
+  return "\"str_error\":\"ERROR:no se recibio respuesta del daemon\"\n";
+}
 static int enviar_respuesta(struct MHD_Connection *connection, const char *page, int statuscodigo){
   int ret;
   struct MHD_Response *response;
