@@ -61,7 +61,6 @@ void recorrer(){
 
 }
 
-
 int connect_retry( int domain, int type, int protocol,  const struct sockaddr *addr, socklen_t alen){
   int numsec, fd; /* * Try to connect with exponential backoff. */ 
   for (numsec = 1; numsec <= MAXSLEEP; numsec++) { 
@@ -74,6 +73,25 @@ int connect_retry( int domain, int type, int protocol,  const struct sockaddr *a
     sleep(1);
   } 
   return(-1); 
+}
+
+
+static int enviar_respuesta(struct MHD_Connection *connection, const char *page, int statuscodigo){
+  int ret;
+  struct MHD_Response *response;
+  response =MHD_create_response_from_buffer (strlen (page), (void *) page,MHD_RESPMEM_PERSISTENT);
+  if (!response) return MHD_NO;
+  MHD_add_response_header(response,"Content-Type","application/json");
+  ret = MHD_queue_response (connection, statuscodigo, response);
+  MHD_destroy_response (response);
+  return ret;
+}
+// funciones para procesar json
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+  if ((int) strlen(s) == tok->end - tok->start-4 && strncmp(json + tok->start+2, s, tok->end - tok->start-4) == 0) {
+    return 0;
+  }
+  return -1;
 }
 
 
