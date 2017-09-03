@@ -42,7 +42,15 @@ void agregar(struct Nodo *nodo){
     }
 }
 
-
+struct Nodo* agregarLista(char* nombre_usb, char* direcion_fisica_usb){
+    struct Nodo * lista= malloc(sizeof(struct Nodo));
+    lista -> nombre= nombre_usb;
+    lista -> direccion_fisica= direcion_fisica_usb;
+    //lista -> direccion_logica= direcion_logica_usb;
+     agregar(lista);
+     return lista;
+   // printf("%s%s%s\n", lista->nombre,->direccion_fisica, lista->direccion_logica);
+}
 
 
 
