@@ -6,6 +6,45 @@
 #include <mntent.h>
 #include <errno.h>
 #include <string.h>
+typedef struct {
+ char* nombre;
+ char* direccion_fisica;
+ char* direccion_logica;
+ struct Nodo *sgte;
+} Nodo;
+ 
+Nodo *primer= NULL;
+Nodo *ultimo= NULL;
+
+void agregar(Nodo *nodo){
+    nodo -> sgte = NULL;
+    if (primer==NULL){
+        primer=nodo;
+    } else{
+       
+        ultimo -> sgte = nodo;
+        ultimo = nodo;
+    }
+}
+void agregarLista(char* nombre_usb, char* direcion_fisica_usb, char* direcion_logica_usb){
+    Nodo * lista= malloc(sizeof(Nodo));
+    lista -> nombre= nombre_usb;
+    lista -> direccion_fisica= direcion_fisica_usb;
+    lista -> direccion_logica= direcion_logica_usb;
+     agregar(lista);
+   // printf("%s%s%s\n", lista->nombre,->direccion_fisica, lista->direccion_logica);
+}
+
+void recorrer(){
+    Nodo *i = primer;
+    while(i != NULL){
+    //printf("%s%s%s\n", i->nombre,i->direccion_fisica, i->direccion_logica);
+    i ->sgte;
+    }
+
+}
+
+
 
 /* permite presentar toda la estructura de una dispositivo usb conectado a la pc*/
 
