@@ -1,15 +1,10 @@
-#include <sys/types.h>          /* some systems still require this */
+#include <sys/types.h>        
 #include <sys/stat.h>
-#include <stdio.h>              /* for convenience */
-#include <stdlib.h>             /* for convenience */
-#include <sys/types.h>          /* some systems still require this */
-#include <sys/stat.h>
-#include <stdio.h>              /* for convenience */
-#include <stdlib.h>             /* for convenience */
-#include <stddef.h>             /* for offsetof */
-#include <string.h>             /* for convenience */
-#include <unistd.h>             /* for convenience */
-#include <signal.h>             /* for SIG_ERR */ 
+#include <stdio.h>          
+#include <stdlib.h>            
+#include <stddef.h>         
+#include <string.h>            
+#include <unistd.h>                  
 #include <netdb.h> 
 #include <errno.h> 
 #include <syslog.h> 
@@ -142,3 +137,4 @@ void escuchandoSolicitudesClientes(){
 		
 	}
 }
+
