@@ -62,6 +62,19 @@ void recorrer(){
 }
 
 
+int connect_retry( int domain, int type, int protocol,  const struct sockaddr *addr, socklen_t alen){
+  int numsec, fd; /* * Try to connect with exponential backoff. */ 
+  for (numsec = 1; numsec <= MAXSLEEP; numsec++) { 
+    if (( fd = socket( domain, type, protocol)) < 0) 
+      return(-1); 
+    if (connect( fd, addr, alen) == 0) { /* * Conexión aceptada. */ 
+      return(fd); 
+    } 
+    close(fd);  
+    sleep(1);
+  } 
+  return(-1); 
+}
 
 
 
