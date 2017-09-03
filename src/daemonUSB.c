@@ -20,10 +20,8 @@ int main(void) {
 	    Cambiar el directorio de trabajo hacia un sitio más seguro.
 	    Cerrar los descriptores de ficheros estandard.
 	    Escribir el código del demonio  */
-	
 	pid_t pid, sid;
-  	int logsdaemon;     
-          
+  	    
 	pid = fork();
 	/* validar fork retorno */
 	if (pid < 0) {
@@ -36,14 +34,6 @@ int main(void) {
 
 	/*  mascara de ficheros cambiado: acceso de otro usuario a ficheros generados aqui*/
 	umask(0);
-	      
-	/*ficheros de logs del demonio para poder comunicarse con el daemon */        
-	logsdaemon = open ("ACTUALIZACION", O_WRONLY | O_CREAT, 0600);
-	/* validar apertura de fichero */
-	if (logsdaemon == -1) {
-		perror ("Error fichero log daemon");
-		return -1;
-	}
 	/* asignar un nuevo pid evitando problemas que se genere un proceso zombie*/
 	/* y validar nuevo id para procesos */
 	
@@ -66,30 +56,13 @@ int main(void) {
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-	
-
 	/* proceso daemon */
 	/* bucle infinito del daemon */
-	/* aqui debe escanear constantemente la PC para verificar si existen nuevos dispositivos USB 
-	conectados y 
-	 */
-
+	/* aqui responder las solicitudes que pida el webserver*/
 	while (1) {
-		struct udev *udev;
-		udev = udev_new();
-		enumerar_disp_alm_masivo(udev);
-      	sleep(5); 	
+		/*falta describir*/
+		escuchandoSolicitudesClientes();
 	}	
 
+}
 
-	/*prueba pequena */
-	/*
-	struct udev *udev;
-	for(int i=0; i<=10; i++){
-		udev = udev_new();
-		enumerar_disp_alm_masivo(udev,logsdaemon);
-		sleep(5); 
-}
-*/
-	return -1; //borrar cuando creamos daemon
-}

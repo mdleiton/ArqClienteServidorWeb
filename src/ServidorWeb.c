@@ -238,12 +238,29 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
                       "\"status\": \"-1 \", %s}",resp);
        return enviar_respuesta (connection, jsonresp,400); 
     }else{
+      if(strlen(resp)<=1){
       sprintf(jsonresp,"{\"solicitud\": \"listar_dispositivos\", \"dispositivos\": [%s ], \n"
-                      "\"status\": \"0\", \"str_error\" : 0}",resp);
+                      "\"status\": \"0\", \"str_error\" :\"no existen dispositivos actualmente conectados\" }",resp);
        return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK); 
+     }else{
+       sprintf(jsonresp,"{\"solicitud\": \"listar_dispositivos\", \"dispositivos\": [%s ], \n"
+                      "\"status\": \"0\", \"str_error\" : 0}",resp);
+       return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
+     }
     }
      //solicitud nombrar_dispositivo
-  }
+  }else{
+      //404 Not Found
+      printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
+      MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
+      char * resp="\"str_error\":\"ERROR 404 Not Found\"";
+      sprintf(jsonresp,"{\"solicitud\": \"%s\", \n"
+             "\"status\": \" -1\", %s }",url,resp);
+      int r=enviar_respuesta (connection, jsonresp,404); 
+      printf("%d \n",r) ;
+      return r;
+    }
+  return MHD_NO;
 }
 
 int main (int argc, char *argv[]){

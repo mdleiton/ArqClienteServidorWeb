@@ -111,6 +111,18 @@ python ./src/cliente.py 8889 POST escribir_archivo david21 programador.txt
 
 Adicional a esto existe un script clientep.py que permite verificar otro tipos de solicitudes y sus respectivas validacion de parte del servidor.En caso que lo requieran.
 
+* En caso que desee finalizar el proceso daemon.
+
+```
+ps -A | grep USB-daemon
+```	
+Al ejecutar esa línea se le mostrará una lista de los dispositivos que se ajusten a ese nombre.
+identifique el numero (pid) del proceso llamado USB-daemon.
+
+```
+kill -TERM <NUMERO PID>
+```	
+
 
 4 - Autores
 -----------
