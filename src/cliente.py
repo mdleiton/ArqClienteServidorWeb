@@ -1,19 +1,65 @@
+# -*- coding: utf8 -*-.
 import requests
-# Creamos la peticin HTTP con GET:
-r = requests.get("http://127.0.0.1:8888/", params = {"w":"774508"})
-# Imprimimos el resultado si el cdigo de estado HTTP es 200 (OK):
-if r.status_code == 200:
-    #print r.text
-    print("good connection")
+import json
+import sys 
+if sys.argv[3]=="listar_dispositivos":
+    if len(sys.argv) == 4 and sys.argv[2]=="GET":
+        url="http://127.0.0.1:"+str(sys.argv[1])+"/"+sys.argv[3]
+        print(url)
+        r=requests.get(url)
+        dic=r.json()
+        print("ENCABEZADOS:",r.headers)
+        print("CODIGO ESTADO:",r.status_code)
+        print("JSON RESPUESTA:",dic)
+        print("JSON STATUS:",dic['status'])
+        print("LISTADO DE DISPOSITIVO:",dic['dispositivos'])
+    else:
+        print("el número de parametros es incorrecto para la solicitud o el metodo para la solicitud es incorrecto")
+elif sys.argv[3]=="nombrar_dispositivo":
+    if len(sys.argv) == 6 and sys.argv[2]=="POST":
+        url="http://127.0.0.1:"+str(sys.argv[1])+"/"+sys.argv[3]
+        jsons={"solicitud":sys.argv[3],"nodo": sys.argv[4],"nombre":sys.argv[5]}
+        print(url)
+        r=requests.post(url,json=json.dumps(jsons))
+        dic=r.json()
+        print("ENCABEZADOS:",r.headers)
+        print("CODIGO ESTADO:",r.status_code)
+        print("JSON RESPUESTA:",dic)
+        print("JSON STATUS:",dic['status'])
+    else:
+        print("el número de parametros es incorrecto para la solicitud o el metodo para la solicitud es incorrecto")
+elif sys.argv[3]=='leer_archivo':
+    if len(sys.argv) == 6 and sys.argv[2]=="GET":
+        url="http://127.0.0.1:"+str(sys.argv[1])+"/"+sys.argv[3]
+        jsons={"solicitud":sys.argv[3],"nombre": sys.argv[4],"nombre_archivo":sys.argv[5]}
+        print(url)
+        r=requests.get(url,data=jsons)
+        dic=r.json()
+        print("ENCABEZADOS:",r.headers)
+        print("CODIGO ESTADO:",r.status_code)
+        print("JSON RESPUESTA:",dic)
+        print("JSON STATUS:",dic['status'])
+    else:
+        print("el número de parametros es incorrecto para la solicitud o el metodo para la solicitud es incorrecto")
+elif sys.argv[3]=='escribir_archivo':
+    if len(sys.argv) == 6 and sys.argv[2]=="POST":
+        url="http://127.0.0.1:"+str(sys.argv[1])+"/"+sys.argv[3]
+        archivo = open(sys.argv[5])
+        contenido=""
+        for linea in archivo:
+            contenido=contenido+linea
+        archivo.close()
+        jsons={"solicitud":sys.argv[3],"nombre": sys.argv[4],"nombre_archivo":sys.argv[5],"tamano_contenido":len(contenido),"contenido":contenido}
+        print(url)
+        r=requests.post(url,data=jsons)
+        dic=r.json()
+        print("ENCABEZADOS:",r.headers)
+        print("CODIGO ESTADO:",r.status_code)
+        print("JSON RESPUESTA:",dic)
+        print("JSON STATUS:",dic['status'])
+    else:
+        print("el número de parametros es incorrecto para la solicitud o el metodo para la solicitud es incorrecto")
+else:
+    print("solicitud no definida")
 
-# Creamos la peticion HTTP tipo post:
-print('segundo tipo e solicitud') 
-contenido = {'name': 'data'}
-r = requests.post("http://127.0.0.1:8888/", data=json.dumps(contenido))
-if r.status_code == 200:
-    print r.text
-    print r.url
-    print r.headers
-    print r.status_code
-    print r.encoding
-    print r.json
+
