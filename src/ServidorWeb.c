@@ -113,6 +113,7 @@ char* init_cliente(char *solicitud){
   close(sockfd);
   return "\"str_error\":\"ERROR:no se recibio respuesta del daemon\"\n";
 }
+
 static int enviar_respuesta(struct MHD_Connection *connection, const char *page, int statuscodigo){
   int ret;
   struct MHD_Response *response;
@@ -129,6 +130,42 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
     return 0;
   }
   return -1;
+}
+
+char* procesandojsonnombrar(const char *upload_data) {
+  char *elementolista=malloc(sizeof(char)*(60));  
+  int r,i;
+  jsmn_parser p;
+  jsmntok_t t[128]; 
+  jsmn_init(&p);
+  char* nodo=malloc(sizeof(char)*(10));
+  char *nombre=malloc(sizeof(char)*(50));
+  char* upload_datas=malloc(sizeof(char)*(strlen( upload_data)));
+  strncpy(upload_datas, upload_data+1, strlen( upload_data)-2);
+  r = jsmn_parse(&p,  upload_datas, strlen(upload_datas), t, 128);
+  printf ("\nprocesando contenido del json.....\n");
+  printf("%d,%s",r,upload_datas);
+  /* Assume the top-level element is an object */
+  if (r < 0) {
+    return NULL;
+  }
+  if (r < 1 || t[0].type != JSMN_OBJECT) {
+    return NULL;
+  }
+    for (i = 1; i < r; i++) {
+      if (jsoneq( upload_datas, &t[i], "nodo") == 0) {
+        sprintf(nodo,"%.*s",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);      
+        printf("\n- %s: %.*s\n", "nodo",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);
+        i++;
+      }
+      if (jsoneq( upload_datas, &t[i], "nombre") == 0) {
+        sprintf(nombre,"%.*s",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);      
+        printf("- %s: %.*s\n", "nombre",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);
+        i++;
+      }      
+    }
+  sprintf(elementolista,"%s-%s",nombre,nodo);      
+  return elementolista;
 }
 
 void iterarElemento(char *lista[]){
