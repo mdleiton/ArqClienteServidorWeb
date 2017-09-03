@@ -167,6 +167,34 @@ char* procesandojsonnombrar(const char *upload_data) {
   sprintf(elementolista,"%s-%s",nombre,nodo);      
   return elementolista;
 }
+int prcesandojson(const char *upload_data, int cantparametros, const char *s[]) {
+  int r,i;
+  jsmn_parser p;
+  jsmntok_t t[128]; 
+  jsmn_init(&p);
+  char* upload_datas=malloc(sizeof(char)*(strlen( upload_data)));
+  strncpy(upload_datas, upload_data+1, strlen( upload_data)-2);
+  r = jsmn_parse(&p,  upload_datas, strlen(upload_datas), t, 128);
+  printf ("\nprocesando contenido del json.....\n");
+  /* Assume the top-level element is an object */
+  if (r < 0) {
+    printf("Failed to parse JSON: %d\n", r);
+    return 0;
+  }
+  if (r < 1 || t[0].type != JSMN_OBJECT) {
+    printf("Object no expected\n");
+    return 0;
+  }
+  for(int token=0;token < cantparametros; token++){
+    for (i = 1; i < r; i++) {
+      if (jsoneq( upload_datas, &t[i], s[token]) == 0) {
+        printf("- %s: %.*s\n", s[token],t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);
+        i++;
+      }
+    }
+}
+  return 1;
+}
 
 void iterarElemento(char *lista[]){
   printf("\n LISTA VIRTUAL SERVIDOR . \n");
