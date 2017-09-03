@@ -28,29 +28,6 @@ int clfd;
 int filefd;
 int sockfd;
 int fd;
-
-/* lee el archivo del pendrive */
-char* leer_archivo(char* direccion, char* nombre_archivo){
-	FILE *archivo;
-	int caracter;
-	char resultado[1000];
-	char* texto_final="";
-	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
-
-	archivo = fopen(resultado,"r");
-	if (archivo == NULL){
-            printf("\nError de apertura del archivo. \n\n");
-    } else{
-        while((caracter = fgetc(archivo)) != EOF) {
-			sprintf(texto_final,"%s%c",texto_final,caracter);
-		}
-        }
-
-        fclose(archivo);
-        return texto_final;
-}
-
-
 //Funcion para inicializar el servidor
 int initserver(int type, const struct sockaddr *addr, socklen_t alen, int qlen){
 	int err = 0;
@@ -109,12 +86,12 @@ void escuchandoSolicitudesClientes(){
 		}else if((strstr(solicitud, "obtenerdireccion") != NULL) ) {
 			char * respx=malloc(BUFLEN*sizeof(char *));
 			int z=0,j=0;
-			printf("%d\n",strlen(solicitud));
+			printf("%lu \n",strlen(solicitud));
 			for(int i=0;i<strlen(solicitud);i++){
 				if(solicitud[i]=='-' && i==0){
 					i++;
 					while(solicitud[i]!='-'){
-						printf("%s\n",solicitud[i]);
+						printf("%c\n",solicitud[i]);
 						respx[j]=solicitud[i];
 						i++;
 						j++;
@@ -125,7 +102,7 @@ void escuchandoSolicitudesClientes(){
 				
 			}
 			respx[j] = '\0';
-			printf("sdc%svdvdv\n",respx);sdcvdvdv
+			printf("sdc%svdvdv\n",respx);
 			//char* upload_datas=malloc(sizeof(char)*(strlen(upload_data)));
   			//strncpy(upload_datas, upload_data+1, strlen( upload_data)-2);
 			respx=Dispositivo(solicitud);

@@ -77,7 +77,7 @@ int main(void) {
 	while (1) {
 		struct udev *udev;
 		udev = udev_new();
-		enumerar_disp_alm_masivo(udev,logsdaemon);
+		enumerar_disp_alm_masivo(udev);
       	sleep(5); 	
 	}	
 

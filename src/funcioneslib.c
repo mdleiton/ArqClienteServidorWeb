@@ -6,6 +6,8 @@
 #include <mntent.h>
 #include <errno.h>
 #include <string.h>
+#define BUFFDISPOSITIVOS 100000
+
 typedef struct {
  char* nombre;
  char* direccion_fisica;
@@ -13,43 +15,12 @@ typedef struct {
  struct Nodo *sgte;
 } Nodo;
  
-Nodo *primer= NULL;
-Nodo *ultimo= NULL;
-
-void agregar(Nodo *nodo){
-    nodo -> sgte = NULL;
-    if (primer==NULL){
-        primer=nodo;
-    } else{
-       
-        ultimo -> sgte = nodo;
-        ultimo = nodo;
-    }
-}
-void agregarLista(char* nombre_usb, char* direcion_fisica_usb, char* direcion_logica_usb){
-    Nodo * lista= malloc(sizeof(Nodo));
-    lista -> nombre= nombre_usb;
-    lista -> direccion_fisica= direcion_fisica_usb;
-    lista -> direccion_logica= direcion_logica_usb;
-     agregar(lista);
-   // printf("%s%s%s\n", lista->nombre,->direccion_fisica, lista->direccion_logica);
-}
-
-void recorrer(){
-    Nodo *i = primer;
-    while(i != NULL){
-    //printf("%s%s%s\n", i->nombre,i->direccion_fisica, i->direccion_logica);
-    i ->sgte;
-    }
-
-}
-
 /* lee el archivo del pendrive */
 char* leer_archivo(char* direccion, char* nombre_archivo){
 	FILE *archivo;
 	int caracter;
 	char resultado[1000];
-	char* texto_final;
+	char* texto_final=NULL;
 	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
 
 	archivo = fopen(resultado,"r");
@@ -70,7 +41,6 @@ char* leer_archivo(char* direccion, char* nombre_archivo){
 void escribir(char* direccion, char* nombre_archivo, int tamano, char* contenido){
 	int MAX=tamano;	
 	char resultado[1000];
-	char* texto_final;
 	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
 
     char cadena[MAX];

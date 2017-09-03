@@ -1,11 +1,18 @@
 #include <sys/types.h>
+#ifndef _WIN32
 #include <sys/select.h>
 #include <sys/socket.h>
+#else
+#include <winsock2.h>
+#endif
 #include <microhttpd.h>
 #include <stdio.h>
 #include <string.h>
-#define PORT 8888
-
+#include <stdlib.h>
+#include "jsmn.h"
+#include <sys/stat.h>
+#include <stddef.h>             /* for offsetof */
+#include <unistd.h>             /* for convenience */
 #include <netdb.h> 
 #include <errno.h> 
 #include <syslog.h> 
@@ -37,8 +44,8 @@ void agregar(struct Nodo *nodo){
     if (primer==NULL){
         primer=nodo;
     } else{
-        ultimo -> sgte = nodo;
-        ultimo = nodo;
+        //ultimo -> sgte = nodo;
+        //ultimo = nodo;
     }
 }
 
@@ -56,7 +63,7 @@ void recorrer(){
     struct Nodo *i = primer;
     while(i != NULL){
     //printf("%s%s%s\n", i->nombre,i->direccion_fisica, i->direccion_logica);
-    i ->sgte;
+    //i ->sgte;
     }
 
 }
@@ -218,40 +225,42 @@ void iterarElemento(char *lista[]){
 
 int answer_to_connection (void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version,
                           const char *upload_data, size_t *upload_data_size, void **con_cls){
-
-	const char *page  = "<html><body>Servidor web Programacion de sistemas</body></html>";
-	struct MHD_Response *response;
-	int ret;
-	//procesando solicitud tipo get
-	if (0 == strcmp (method, "GET")){
-	    printf("PROCESANDO SOLICUTUD GET \n");
-	    MHD_get_connection_values (connection, MHD_HEADER_KIND, print_out_key,NULL);
-	    const char* value = MHD_lookup_connection_value(connection, MHD_GET_ARGUMENT_KIND, "data");
-	    printf("PROCESANDO value: %s\n",value);
-	 }
-	//procesando solicitud tipo post
-	if (0 == strcmp (method, "POST")){
-   		printf ("PROCESANDO SOLICUTUD POST \n");
-	    struct connection_info_struct *con_info = *con_cls;
-	    if (*upload_data_size != 0){
-		return MHD_YES;
-	      }
-	  }
-	response = MHD_create_response_from_buffer (strlen (page),(void*) page, MHD_RESPMEM_PERSISTENT);
-	ret = MHD_queue_response (connection, MHD_HTTP_OK, response);
-	MHD_destroy_response (response);
-
-	return ret;
+  //procesando los tipos de solicitudes
+  char* jsonresp=malloc(BUFFERING*sizeof(char *));
+  char* solicitud=malloc(BUFFERING*sizeof(char *));
+  if (0 == strcmp (method,MHD_HTTP_METHOD_GET)  && !strncasecmp(url, "/listar_dispositivos", 19)){
+    sprintf(solicitud, "%s-%s",method,"listar_dispositivos");
+    printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
+    MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
+    char *resp=init_cliente(solicitud);
+    if(strstr(resp, "str_error")!=NULL ){
+       sprintf(jsonresp,"{\"solicitud\": \"listar_dispositivos\", \n"
+                      "\"status\": \"-1 \", %s}",resp);
+       return enviar_respuesta (connection, jsonresp,400); 
+    }else{
+      sprintf(jsonresp,"{\"solicitud\": \"listar_dispositivos\", \"dispositivos\": [%s ], \n"
+                      "\"status\": \"0\", \"str_error\" : 0}",resp);
+       return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK); 
+    }
+     //solicitud nombrar_dispositivo
+  }
 }
 
-int main (){
-  	struct MHD_Daemon *daemon;
-	daemon = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,&answer_to_connection,NULL,MHD_OPTION_NOTIFY_COMPLETED, request_completed,
-                             NULL, MHD_OPTION_END);
-  	if (NULL == daemon) return 1;
+int main (int argc, char *argv[]){
+  if(argc != 2){
+    printf("Uso: ./bin/ServidorWeb <puerto>\n");
+    exit(-1);
+  }
+  int puerto = atoi(argv[1]);
+  struct MHD_Daemon *daemon;
+   daemon = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, puerto, NULL, NULL, &answer_to_connection, NULL,MHD_OPTION_END);
+  if (NULL == daemon) return 1;
 
-	getchar ();
+  (void) getchar ();
 
-  	MHD_stop_daemon (daemon);
-  	return 0;
+  MHD_stop_daemon (daemon);
+  return 0;
 }
+
+
+
