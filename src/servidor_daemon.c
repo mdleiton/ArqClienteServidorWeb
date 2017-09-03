@@ -59,4 +59,14 @@ void escuchandoSolicitudesClientes(){
 	//Direccion del servidor
 	struct sockaddr_in direccion_servidor;
 	memset(&direccion_servidor, 0, sizeof(direccion_servidor));	//ponemos en 0 la estructura direccion_servidor
+
+	//llenamos los campos
+	direccion_servidor.sin_family = AF_INET;		//IPv4
+	direccion_servidor.sin_port = htons(puerto);		//Convertimos el numero de puerto al endianness de la red
+	direccion_servidor.sin_addr.s_addr = inet_addr("127.0.0.1") ;	//Nos vinculamos a la interface localhost o podemos usar INADDR_ANY para ligarnos A TODAS las interfaces
+
+	if( (sockfd = initserver(SOCK_STREAM, (struct sockaddr *)&direccion_servidor, sizeof(direccion_servidor), 1000)) < 0){	//Hasta 1000 solicitudes en cola 
+		printf("existe un proceso ya ejecutanse. eliminar proceso daemonUSB\n");	
+	}		
+
 }
