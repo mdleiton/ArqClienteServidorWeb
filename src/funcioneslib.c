@@ -122,8 +122,7 @@ const char* direccionDispositivo(const char *direccion_fisica){
 	/*function opens the filesystem description file filename and returns a file pointer*/
 	fp = setmntent("/etc/mtab", "r");
 	if (fp == NULL) {
-		fprintf(stderr, " error al intentar abrir el archivo: %s\n", strerror(errno));
-		exit(1);
+		return "\"str_error\":\"ERROR: Al intentar abrir el fichero: /etc/mtab que contiene la direccion logico de los disp USB\"";
 	}
 	/* que leerá UNA linea del mtab, y les devolverá una estructura:*/
 	while ((fs = getmntent(fp)) != NULL){
@@ -135,7 +134,7 @@ const char* direccionDispositivo(const char *direccion_fisica){
 		}
 	}
 	endmntent(fp);
-	return "no se encuentra montado dicho dispositivo";
+	return  "no se encuentra montado dicho dispositivo";
 }
 
 void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
