@@ -68,5 +68,3 @@ void escuchandoSolicitudesClientes(){
 	if( (sockfd = initserver(SOCK_STREAM, (struct sockaddr *)&direccion_servidor, sizeof(direccion_servidor), 1000)) < 0){	//Hasta 1000 solicitudes en cola 
 		printf("existe un proceso ya ejecutanse. eliminar proceso daemonUSB\n");	
 	}		
-
-}
