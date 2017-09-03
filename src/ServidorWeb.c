@@ -52,7 +52,14 @@ struct Nodo* agregarLista(char* nombre_usb, char* direcion_fisica_usb){
    // printf("%s%s%s\n", lista->nombre,->direccion_fisica, lista->direccion_logica);
 }
 
+void recorrer(){
+    struct Nodo *i = primer;
+    while(i != NULL){
+    //printf("%s%s%s\n", i->nombre,i->direccion_fisica, i->direccion_logica);
+    i ->sgte;
+    }
 
+}
 
 
 
