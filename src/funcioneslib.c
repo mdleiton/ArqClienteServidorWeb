@@ -44,6 +44,26 @@ void recorrer(){
 
 }
 
+/* lee el archivo del pendrive */
+char* leer_archivo(char* direccion, char* nombre_archivo){
+	FILE *archivo;
+	int caracter;
+	char resultado[1000];
+	char* texto_final;
+	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
+
+	archivo = fopen(resultado,"r");
+	if (archivo == NULL){
+            printf("\nError de apertura del archivo. \n\n");
+    } else{
+        while((caracter = fgetc(archivo)) != EOF) {
+			sprintf(texto_final,"%s%c",texto_final,caracter);
+		}
+        }
+
+        fclose(archivo);
+        return texto_final;
+}
 
 
 /* permite presentar toda la estructura de una dispositivo usb conectado a la pc*/
