@@ -21,10 +21,13 @@ Para en funcionamiento de este programa es necesario contar con las siguientes l
 
 * Libreria libudev
 * Libreria libmicrohttpd
+* Libreria Requests
 
 ```
 sudo apt-get install libudev-dev
 sudo apt-get install libmicrohttpd*
+sudo pip install request
+pip install requests
 ```
 
 Para crear los ejecutables se disponible de una archivo makefile que le facilitará el trabajo.
