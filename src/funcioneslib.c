@@ -197,3 +197,23 @@ char* enumerar_disp_alm_masivo(struct udev* udev){
 	return lista;
 
 }
+char* Dispositivo(char *direccion_fisica){
+	FILE *fp;
+	struct mntent *fs;
+	/*function opens the filesystem description file filename and returns a file pointer*/
+	fp = setmntent("/etc/mtab", "r");
+	if (fp == NULL) {
+		return "\"str_error\":\"ERROR: Al intentar abrir el fichero: /etc/mtab que contiene la direccion logico de los disp USB\"";
+	}
+	/* que leerá UNA linea del mtab, y les devolverá una estructura:*/
+	while ((fs = getmntent(fp)) != NULL){
+		/* resulta que direccion_fisica no contiene un numero al final que indica la particion correspondiente
+		en caso de solo poseer una sola particion posee el numero 1 (esto es lo mas comun para un dispositivo usb)*/
+		if(strstr(fs->mnt_fsname,direccion_fisica)>0){
+			endmntent(fp);
+			return(char*) fs->mnt_dir;
+		}
+	}
+	endmntent(fp);
+	return  "no se encuentra montado dicho dispositivo";
+}
