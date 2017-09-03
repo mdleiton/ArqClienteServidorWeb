@@ -87,5 +87,50 @@ void escuchandoSolicitudesClientes(){
 	direccion_servidor.sin_addr.s_addr = inet_addr("127.0.0.1") ;	//Nos vinculamos a la interface localhost o podemos usar INADDR_ANY para ligarnos A TODAS las interfaces
 
 	if( (sockfd = initserver(SOCK_STREAM, (struct sockaddr *)&direccion_servidor, sizeof(direccion_servidor), 1000)) < 0){	//Hasta 1000 solicitudes en cola 
-		printf("existe un proceso ya ejecutanse. eliminar proceso daemonUSB\n");	
-	}		
+		printf("existe un proceso ya ejecutanse. eliminar proceso daemonUSB\n");
+	
+	while(1){
+		//Ciclo para enviar y recibir mensajes
+		if (( clfd = accept( sockfd, NULL, NULL)) < 0) { 		//Aceptamos una conexion
+			close(clfd);
+			continue;
+		} 
+	    char *solicitud = malloc(BUFLEN*sizeof(char *));
+		recv(clfd, solicitud, BUFLEN, 0);
+	  	//tratamiento tipo de solicitud
+	  	if ((strstr(solicitud, "GET") != NULL) && (strstr(solicitud, "listar_dispositivos") != NULL)) {
+  			//solicitud : GET - listar_dispositivo
+  			struct udev *udeva;
+			udeva = udev_new();
+			char* lista=enumerar_disp_alm_masivo(udeva);
+		    send(clfd,lista,strlen(lista),0);
+		    close(clfd);
+		}else if((strstr(solicitud, "obtenerdireccion") != NULL) ) {
+			char * respx=malloc(BUFLEN*sizeof(char *));
+			int z=0,j=0;
+			printf("%d\n",strlen(solicitud));
+			for(int i=0;i<strlen(solicitud);i++){
+				if(solicitud[i]=='-' && i==0){
+					i++;
+					while(solicitud[i]!='-'){
+						printf("%s\n",solicitud[i]);
+						respx[j]=solicitud[i];
+						i++;
+						j++;
+					}
+					z++;
+
+				}
+				
+			}
+			respx[j] = '\0';
+			printf("sdc%svdvdv\n",respx);sdcvdvdv
+			//char* upload_datas=malloc(sizeof(char)*(strlen(upload_data)));
+  			//strncpy(upload_datas, upload_data+1, strlen( upload_data)-2);
+			respx=Dispositivo(solicitud);
+			send(clfd,respx,strlen(respx),0);
+		    close(clfd);
+		}
+		close(clfd);	
+	}
+}		
