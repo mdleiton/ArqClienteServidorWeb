@@ -6,6 +6,52 @@
 #include <string.h>
 #define PORT 8888
 
+#include <netdb.h> 
+#include <errno.h> 
+#include <syslog.h> 
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/resource.h>
+#define BUFLEN 1024
+#define MAXSLEEP 24
+#define BUFFERING 100000
+struct Nodo{
+  char* nombre;
+  char* direccion_fisica;
+  char* direccion_logica;
+  struct Nodo *sgte;
+};
+struct USBnombrado{
+  char* nombre;
+  char* direccion_fisica;
+  char* direccion_logica;
+};
+struct Nodo *primer= NULL;
+struct Nodo *ultimo= NULL;
+char* lista[5];
+struct USBnombrados* nombrados[5];
+int elementos=0;
+void agregar(struct Nodo *nodo){
+    nodo -> sgte = NULL;
+    if (primer==NULL){
+        primer=nodo;
+    } else{
+        ultimo -> sgte = nodo;
+        ultimo = nodo;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 /*MHD_Connection *connection es dada por libmicrohttpd daemon para mantener requerida inf relacionada a la conexion*/
 
 int answer_to_connection (void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version,
