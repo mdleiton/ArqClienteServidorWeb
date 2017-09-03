@@ -94,7 +94,17 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
   return -1;
 }
 
+void iterarElemento(char *lista[]){
+  printf("\n LISTA VIRTUAL SERVIDOR . \n");
+  if(elementos==0) {
+    printf("Lista vacia.No hay dispositivo USB nombrados. \n");
+    return;
+  }
+  for (int i = 0; i < elementos; i++) {     
+      printf("dispositivo : %s \n", lista[i]);
+      }
 
+}
 
 
 
