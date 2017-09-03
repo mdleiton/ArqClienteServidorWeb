@@ -48,3 +48,15 @@ errout:
 	errno = err;
 	return (-1);
 }
+
+void escuchandoSolicitudesClientes(){ 
+	int  n,puerto = 8888;
+	char *host; 
+	if (( n = sysconf(_SC_HOST_NAME_MAX)) < 0) n = HOST_NAME_MAX; /* best guess */ 
+	if ((host = malloc(n)) == NULL) printf(" malloc error"); 
+	if (gethostname( host, n) < 0) 		//Obtenemos nombre del host
+		printf(" gethostname error"); 
+	//Direccion del servidor
+	struct sockaddr_in direccion_servidor;
+	memset(&direccion_servidor, 0, sizeof(direccion_servidor));	//ponemos en 0 la estructura direccion_servidor
+}
