@@ -137,7 +137,7 @@ const char* direccionDispositivo(const char *direccion_fisica){
 	return  "no se encuentra montado dicho dispositivo";
 }
 
-void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
+char* enumerar_disp_alm_masivo(struct udev* udev){
 
 	struct udev_enumerate* enumerar = udev_enumerate_new(udev);
 
@@ -151,9 +151,11 @@ void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
 	struct udev_list_entry *entrada;
 
 	//Recorremos la lista obtenida
-	char *concat_str = (char *)malloc(200);
+	
+	char *lista = (char *)malloc(BUFFDISPOSITIVOS);
 	int n=0;
 	udev_list_entry_foreach(entrada, dispositivos) {
+		char *concat_str = (char *)malloc(BUFFDISPOSITIVOS);
 		const char* ruta = udev_list_entry_get_name(entrada);
 		struct udev_device* scsi = udev_device_new_from_syspath(udev, ruta);
 		
@@ -161,31 +163,37 @@ void enumerar_disp_alm_masivo(struct udev* udev,int logsdaemon){
 		struct udev_device* block = obtener_hijo(udev, scsi, "block");
 		struct udev_device* scsi_disk = obtener_hijo(udev, scsi, "scsi_disk");
 
-		struct udev_device* usb
-			= udev_device_get_parent_with_subsystem_devtype(scsi, "usb", "usb_device");
+		struct udev_device* usb= udev_device_get_parent_with_subsystem_devtype(scsi, "usb", "usb_device");
 		
 		if (block && scsi_disk && usb){
 			const char *nodo=udev_device_get_devnode(block);
-			n=sprintf(concat_str, "nodo = %s,El punto de montaje = %s, id(idVendor:idProduct)= %s:%s, scsi = %s\n", 
+			const char * validarerror=direccionDispositivo(nodo);
+			if(strstr(validarerror, "str_error")!=NULL ){
+				return (char *)validarerror;
+			}
+			n=sprintf(concat_str, "{\"nodo\":\"%s\", \"nombre\":\" \",\"montaje\":\"%s\",\"Vendor:idProduct\":\"%s:%s\",\"scsi\":\"%s\"}\n", 
 				nodo,
 				direccionDispositivo(nodo),
 				udev_device_get_sysattr_value(usb, "idVendor"),
 				udev_device_get_sysattr_value(usb, "idProduct"),
 				udev_device_get_sysattr_value(scsi, "vendor"));
-			//fwrite(concat_str, CONCAT_LEN, 1, fptr);
-			write (logsdaemon, concat_str, n);
+			if(strstr(lista, "nodo")!=NULL){
+				char *copia = (char *)malloc(BUFFDISPOSITIVOS);
+				sprintf(copia, "%s",lista);
+				sprintf(lista, "%s,%s",copia,concat_str);
+			}else{
+				sprintf(lista, "%s",concat_str);
+			}
 		}
-		if (block) {
-			udev_device_unref(block);
-		}
-
-		if (scsi_disk) {
-			udev_device_unref(scsi_disk);
-		}
+		if (block) udev_device_unref(block);
+		if (scsi_disk) udev_device_unref(scsi_disk);
 		udev_device_unref(scsi);
+		//validar para mas de dos dispositivos con contatenacion
+		
+	//		concat_str=NULL;
 	}
-	if(n==0){
-			write (logsdaemon, "no hay dispositivo conectado \n", 30);
-		}
+	if(n==0) lista=" ";
 	udev_enumerate_unref(enumerar);
+	return lista;
+
 }
