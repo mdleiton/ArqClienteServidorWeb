@@ -95,9 +95,6 @@ void presentar_estructuraMNTENT(const struct mntent *fs){
 		fs->mnt_passno);	/* pass number on parallel fsck */
 }
 
-
-
-
 struct udev_device* obtener_hijo(struct udev* udev, struct udev_device* padre, const char* subsistema){
 	struct udev_device* hijo = NULL;
 	struct udev_enumerate *enumerar = udev_enumerate_new(udev);
@@ -113,7 +110,6 @@ struct udev_device* obtener_hijo(struct udev* udev, struct udev_device* padre, c
 		hijo = udev_device_new_from_syspath(udev, ruta);
 		break;
 	}
-
 	udev_enumerate_unref(enumerar); 
 	return hijo;
 }
