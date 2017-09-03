@@ -2,6 +2,10 @@
 #include <sys/stat.h>
 #include <stdio.h>              /* for convenience */
 #include <stdlib.h>             /* for convenience */
+#include <sys/types.h>          /* some systems still require this */
+#include <sys/stat.h>
+#include <stdio.h>              /* for convenience */
+#include <stdlib.h>             /* for convenience */
 #include <stddef.h>             /* for offsetof */
 #include <string.h>             /* for convenience */
 #include <unistd.h>             /* for convenience */
@@ -51,6 +55,7 @@ char* leer_archivo(char* direccion, char* nombre_archivo){
         return texto_final;
 }
 
+
 //Funcion para inicializar el servidor
 int initserver(int type, const struct sockaddr *addr, socklen_t alen, int qlen){
 	int err = 0;
@@ -87,8 +92,9 @@ void escuchandoSolicitudesClientes(){
 	direccion_servidor.sin_addr.s_addr = inet_addr("127.0.0.1") ;	//Nos vinculamos a la interface localhost o podemos usar INADDR_ANY para ligarnos A TODAS las interfaces
 
 	if( (sockfd = initserver(SOCK_STREAM, (struct sockaddr *)&direccion_servidor, sizeof(direccion_servidor), 1000)) < 0){	//Hasta 1000 solicitudes en cola 
-		printf("existe un proceso ya ejecutanse. eliminar proceso daemonUSB\n");
-	
+		printf("existe un proceso ya ejecutanse. eliminar proceso daemonUSB\n");	
+	}		
+
 	while(1){
 		//Ciclo para enviar y recibir mensajes
 		if (( clfd = accept( sockfd, NULL, NULL)) < 0) { 		//Aceptamos una conexion
@@ -131,6 +137,8 @@ void escuchandoSolicitudesClientes(){
 			send(clfd,respx,strlen(respx),0);
 		    close(clfd);
 		}
-		close(clfd);	
+		close(clfd);
+			
+		
 	}
-}		
+}
