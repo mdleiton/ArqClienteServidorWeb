@@ -66,6 +66,23 @@ char* leer_archivo(char* direccion, char* nombre_archivo){
 }
 
 
+/*escribir archivo en el pendrive*/
+void escribir(char* direccion, char* nombre_archivo, int tamano, char* contenido){
+	int MAX=tamano;	
+	char resultado[1000];
+	char* texto_final;
+	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
+
+    char cadena[MAX];
+    sprintf(cadena,"%s%s", cadena,contenido);
+    FILE* fichero;
+    fichero = fopen(resultado, "wt");
+    fputs(cadena, fichero);
+    fclose(fichero);
+    printf("Proceso completado");
+}
+
+
 /* permite presentar toda la estructura de una dispositivo usb conectado a la pc*/
 
 void presentar_estructuraMNTENT(const struct mntent *fs){
