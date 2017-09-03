@@ -196,6 +196,10 @@ int prcesandojson(const char *upload_data, int cantparametros, const char *s[]) 
   return 1;
 }
 
+static int iterar_encabezado (void *cls, enum MHD_ValueKind kind, const char *key, const char *value){
+  printf ("Encabezado %s: %s\n", key, value);
+  return MHD_YES;
+}
 void iterarElemento(char *lista[]){
   printf("\n LISTA VIRTUAL SERVIDOR . \n");
   if(elementos==0) {
