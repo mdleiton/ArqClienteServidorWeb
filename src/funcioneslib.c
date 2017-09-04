@@ -7,14 +7,6 @@
 #include <errno.h>
 #include <string.h>
 #define BUFFDISPOSITIVOS 100000
-
-typedef struct {
- char* nombre;
- char* direccion_fisica;
- char* direccion_logica;
- struct Nodo *sgte;
-} Nodo;
- 
 /* lee el archivo del pendrive */
 char* leer_archivo(char* direccion, char* nombre_archivo){
 	FILE *archivo;
@@ -22,20 +14,15 @@ char* leer_archivo(char* direccion, char* nombre_archivo){
 	char resultado[1000];
 	char* texto_final=NULL;
 	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
-
 	archivo = fopen(resultado,"r");
 	if (archivo == NULL){
             printf("\nError de apertura del archivo. \n\n");
-    } else{
-        while((caracter = fgetc(archivo)) != EOF) {
-			sprintf(texto_final,"%s%c",texto_final,caracter);
-		}
-        }
-
-        fclose(archivo);
-        return texto_final;
+    }else{
+        while((caracter = fgetc(archivo)) != EOF) sprintf(texto_final,"%s%c",texto_final,caracter);
+	}
+    fclose(archivo);
+    return texto_final;
 }
-
 
 /*escribir archivo en el pendrive*/
 void escribir(char* direccion, char* nombre_archivo, int tamano, char* contenido){
@@ -52,9 +39,7 @@ void escribir(char* direccion, char* nombre_archivo, int tamano, char* contenido
     printf("Proceso completado");
 }
 
-
 /* permite presentar toda la estructura de una dispositivo usb conectado a la pc*/
-
 void presentar_estructuraMNTENT(const struct mntent *fs){
 	printf("nodo :%s \n direccion logica :%s \n %s \n %s \n %d \n %d\n",
 		fs->mnt_fsname,  /* name of mounted filesystem(es el nodo del dispositivo) */

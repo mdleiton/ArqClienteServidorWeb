@@ -23,50 +23,22 @@
 #define BUFLEN 1024
 #define MAXSLEEP 24
 #define BUFFERING 100000
-struct Nodo{
+
+struct USBlista{
   char* nombre;
-  char* direccion_fisica;
-  char* direccion_logica;
-  struct Nodo *sgte;
+  char* nodo;
+  char* montaje;
+  char* sci;
+  char* VendoridProduct;
 };
 struct USBnombrado{
   char* nombre;
   char* direccion_fisica;
   char* direccion_logica;
 };
-struct Nodo *primer= NULL;
-struct Nodo *ultimo= NULL;
-char* lista[5];
-struct USBnombrados* nombrados[5];
+
+struct USBnombrado* nombrados[5];
 int elementos=0;
-void agregar(struct Nodo *nodo){
-    nodo -> sgte = NULL;
-    if (primer==NULL){
-        primer=nodo;
-    } else{
-        //ultimo -> sgte = nodo;
-        //ultimo = nodo;
-    }
-}
-
-struct Nodo* agregarLista(char* nombre_usb, char* direcion_fisica_usb){
-    struct Nodo * lista= malloc(sizeof(struct Nodo));
-    lista -> nombre= nombre_usb;
-    lista -> direccion_fisica= direcion_fisica_usb;
-    //lista -> direccion_logica= direcion_logica_usb;
-     agregar(lista);
-     return lista;
-   // printf("%s%s%s\n", lista->nombre,->direccion_fisica, lista->direccion_logica);
-}
-
-void recorrer(){
-    struct Nodo *i = primer;
-    while(i != NULL){
-    //printf("%s%s%s\n", i->nombre,i->direccion_fisica, i->direccion_logica);
-    //i ->sgte;
-    }
-
-}
 
 int connect_retry( int domain, int type, int protocol,  const struct sockaddr *addr, socklen_t alen){
   int numsec, fd; /* * Try to connect with exponential backoff. */ 
@@ -147,11 +119,27 @@ char* procesandojsonnombrar(const char *upload_data) {
   jsmn_init(&p);
   char* nodo=malloc(sizeof(char)*(10));
   char *nombre=malloc(sizeof(char)*(50));
-  char* upload_datas=malloc(sizeof(char)*(strlen( upload_data)));
-  strncpy(upload_datas, upload_data+1, strlen( upload_data)-2);
-  r = jsmn_parse(&p,  upload_datas, strlen(upload_datas), t, 128);
+   printf("\n aaaaaaaaa%s\n",upload_data);
+  char* upload_datas=malloc(sizeof(char)*(strlen( upload_data)-2));
+  memset(upload_datas,0,strlen( upload_data)-2);
+      int j=0;
+      for(int i=0;i<strlen(upload_data);i++){
+        if(upload_data[i]=='{' && j==0){
+          while(upload_data[i]!='}'){
+            upload_datas[j]=upload_data[i];
+            i++;
+            j++;
+          }
+          upload_datas[j]=upload_data[i];
+        }
+      }
+      char * re=malloc((j-1)*sizeof(char *));
+      memset(re,0,j-1);
+      re=upload_datas;
+  
+  r = jsmn_parse(&p,  re, strlen(re), t, 128);
   printf ("\nprocesando contenido del json.....\n");
-  printf("%d,%s",r,upload_datas);
+  printf("%d,%s",r,re);
   /* Assume the top-level element is an object */
   if (r < 0) {
     return NULL;
@@ -162,16 +150,22 @@ char* procesandojsonnombrar(const char *upload_data) {
     for (i = 1; i < r; i++) {
       if (jsoneq( upload_datas, &t[i], "nodo") == 0) {
         sprintf(nodo,"%.*s",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);      
-        printf("\n- %s: %.*s\n", "nodo",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);
+        printf("\n - %s: %.*s\n", "nodo",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);
         i++;
       }
       if (jsoneq( upload_datas, &t[i], "nombre") == 0) {
         sprintf(nombre,"%.*s",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);      
-        printf("- %s: %.*s\n", "nombre",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);
+        printf("\n - %s: %.*s\n", "nombre",t[i+1].end-t[i+1].start-4, upload_datas + t[i+1].start+2);
         i++;
       }      
     }
-  sprintf(elementolista,"%s-%s",nombre,nodo);      
+
+  struct USBnombrado *usb=malloc(sizeof(struct USBnombrado));
+  usb->nombre=nombre;
+  usb->direccion_fisica=nodo;
+  nombrados[elementos]=usb;
+  elementos++;     
+  sprintf(elementolista,"%s-%s",usb->direccion_fisica, usb->nombre); 
   return elementolista;
 }
 int prcesandojson(const char *upload_data, int cantparametros, const char *s[]) {
@@ -180,8 +174,23 @@ int prcesandojson(const char *upload_data, int cantparametros, const char *s[]) 
   jsmntok_t t[128]; 
   jsmn_init(&p);
   char* upload_datas=malloc(sizeof(char)*(strlen( upload_data)));
-  strncpy(upload_datas, upload_data+1, strlen( upload_data)-2);
-  r = jsmn_parse(&p,  upload_datas, strlen(upload_datas), t, 128);
+  char * respx=malloc(8*sizeof(char *));
+      int j=0;
+      for(int i=0;i<strlen(upload_data);i++){
+        if(upload_data[i]=='{' && j==0){
+          i++;
+          while(upload_data[i]!='}'){
+            upload_datas[j]=upload_data[i];
+            i++;
+            j++;
+          }
+        }
+      }
+      char * re=malloc((j-1)*sizeof(char *));
+      memset(re,0,j-1);
+      re=upload_datas;
+  
+  r = jsmn_parse(&p,  re, strlen(re), t, 128);
   printf ("\nprocesando contenido del json.....\n");
   /* Assume the top-level element is an object */
   if (r < 0) {
@@ -207,27 +216,28 @@ static int iterar_encabezado (void *cls, enum MHD_ValueKind kind, const char *ke
   printf ("Encabezado %s: %s\n", key, value);
   return MHD_YES;
 }
-void iterarElemento(char *lista[]){
+
+void iterar(struct USBnombrado *lista[]){
   printf("\n LISTA VIRTUAL SERVIDOR . \n");
   if(elementos==0) {
     printf("Lista vacia.No hay dispositivo USB nombrados. \n");
     return;
   }
   for (int i = 0; i < elementos; i++) {     
-      printf("dispositivo : %s \n", lista[i]);
+      printf("dispositivo N%d| nombre:%s,direccion fisica:%s,direccion logica:%s \n", i+1,lista[i]->nombre,lista[i]->direccion_fisica,lista[i]->direccion_logica);
       }
-
 }
 
 
 
 /*MHD_Connection *connection es dada por libmicrohttpd daemon para mantener requerida inf relacionada a la conexion*/
-
 int answer_to_connection (void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version,
                           const char *upload_data, size_t *upload_data_size, void **con_cls){
   //procesando los tipos de solicitudes
   char* jsonresp=malloc(BUFFERING*sizeof(char *));
+  memset(jsonresp,0,BUFFERING);
   char* solicitud=malloc(BUFFERING*sizeof(char *));
+  memset(solicitud,0,BUFFERING);
   if (0 == strcmp (method,MHD_HTTP_METHOD_GET)  && !strncasecmp(url, "/listar_dispositivos", 19)){
     sprintf(solicitud, "%s-%s",method,"listar_dispositivos");
     printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
@@ -249,7 +259,32 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
      }
     }
      //solicitud nombrar_dispositivo
-  }else{
+  }else if (0 == strcmp (method, "POST") && !strncasecmp(url, "/nombrar_dispositivo", 17)){
+    int i,r;
+    if(upload_data==NULL){
+      return MHD_YES;
+    }
+    if(upload_data!=NULL){
+      iterar(nombrados);
+      printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
+      MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
+      printf ("obteniendo json con información............\n");
+      char * resp=procesandojsonnombrar(upload_data);
+      sprintf(solicitud, "%s-%s","obtenerdireccion",resp);
+      char *respuesta=init_cliente(solicitud);
+      if(strstr(respuesta, "no se encuentra")!=NULL){
+        sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \n"
+                    "\"status\": \"-1 \", %s}",respuesta);
+        return enviar_respuesta (connection, jsonresp,400); 
+      }else{
+        nombrados[elementos-1]->direccion_logica=respuesta;
+        iterar(nombrados);
+        sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \"nombre\":\"%s\" , \n"
+                      "\"nodo\":\"%s\" ,\"status\": \"0\", \"str_error\" : 0}",respuesta,respuesta);
+        return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
+      }
+    }
+    }else{
       //404 Not Found
       printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
       MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);

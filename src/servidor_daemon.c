@@ -83,35 +83,27 @@ void escuchandoSolicitudesClientes(){
 			char* lista=enumerar_disp_alm_masivo(udeva);
 		    send(clfd,lista,strlen(lista),0);
 		    close(clfd);
-		}else if((strstr(solicitud, "obtenerdireccion") != NULL) ) {
-			char * respx=malloc(BUFLEN*sizeof(char *));
-			int z=0,j=0;
-			printf("%lu \n",strlen(solicitud));
+		}else if((strstr(solicitud, "obtenerdireccion") != NULL) ){
+			char * respx=malloc(8*sizeof(char *));
+			int j=0;
 			for(int i=0;i<strlen(solicitud);i++){
-				if(solicitud[i]=='-' && i==0){
+				if(solicitud[i]=='-' && j==0){
 					i++;
 					while(solicitud[i]!='-'){
-						printf("%c\n",solicitud[i]);
 						respx[j]=solicitud[i];
 						i++;
 						j++;
 					}
-					z++;
-
 				}
-				
 			}
-			respx[j] = '\0';
-			printf("sdc%svdvdv\n",respx);
-			//char* upload_datas=malloc(sizeof(char)*(strlen(upload_data)));
-  			//strncpy(upload_datas, upload_data+1, strlen( upload_data)-2);
-			respx=Dispositivo(solicitud);
-			send(clfd,respx,strlen(respx),0);
-		    close(clfd);
+			char * r=malloc((j-1)*sizeof(char *));
+			memset(r,0,j-1);
+			r=respx;
+			char* respuesta=Dispositivo(r);
+			send(clfd,respuesta,strlen(respuesta),0);
+			close(clfd);
 		}
 		close(clfd);
-			
-		
 	}
 }
 
