@@ -4,19 +4,19 @@ ArqClienteServidorWeb
 Escuela Superior PolitÃ©cnica del Litoral
 Version 1.0 15/08/2017 
 
-1 - DescripciÃ³n
+1 - Descripción
 ---------------
 Este programa permite monitoriar los puertos USB de nuestra computadora, detectar la conexiÃ³n de nuevos dispositivos USB a traves de un proceso(daemon). 
 Un servidor web solicitarÃ¡ dicha informaciÃ³n a este proceso para responder a las solicitudes realizadas por un cliente (escrito en python).
 
-El cliente serÃ¡ capaz de solicitar :
+El cliente será capaz de solicitar :
 
 * Solicitar una lista detallada de todos los dispositivos conectados a la computadora.
 * Nombrar a cualquier dispositivos que se encuentre conectado en la computadora.
 * Escribir archivos enviados por el cliente en cualquier dispositivo USB conectado a la computadora .
 * Leer archivo de cualquier dispositivo USB conectado a la computadora y enviarlo al cliente que solicite dicho archivo.
 
-2 - InstalaciÃ³n
+2 - Instalación
 ----------------
 Para en funcionamiento de este programa es necesario contar con las siguientes librerias:
 
@@ -31,7 +31,7 @@ sudo pip install request
 pip install requests
 ```
 
-Para crear los ejecutables se disponible de una archivo makefile que le facilitarÃ¡ el trabajo.
+Para crear los ejecutables se disponible de una archivo makefile que le facilitará el trabajo.
 para la crear el ejecutable del daemonUSB y el servidor web.
 
 ```
@@ -43,8 +43,8 @@ make
 
 * iniciar USB-daemon.
 
-El daemon por defecto escucharÃ¡ las solicitudes servidor web por el puerto nÃºmero 8888
-Este proceso se encargarÃ¡ de responder las solicitudes del servidor web.
+El daemon por defecto escuchará las solicitudes servidor web por el puerto número 8888
+Este proceso se encargará de responder las solicitudes del servidor web.
 
 ```
 ./bin/USB-daemon
@@ -52,7 +52,7 @@ Este proceso se encargarÃ¡ de responder las solicitudes del servidor web.
 
 * iniciar servidor web.
 
-El servidor web actuarÃ¡ de intermediara entre el cliente y el proceso daemon.
+El servidor web actuará de intermediara entre el cliente y el proceso daemon.
 Recibe la solicitud del cliente, la procesa y envia la solicutud al proceso daemon, luego recibe respuesta del daemon de la solicitud realiza, la procesa y la envia al cliente. Al ejecutarlo se debe enviar de parametro el puerto . debe ser diferente al puerto 8888 con el cual esta escuchando el procesodaemon.
 
 ```
@@ -120,7 +120,7 @@ Adicional a esto existe un script clientep.py que permite verificar otro tipos d
 ```
 ps -A | grep USB-daemon
 ```	
-Al ejecutar esa lÃ­nea se le mostrarÃ¡ una lista de los dispositivos que se ajusten a ese nombre.
+Al ejecutar esa lÃ­nea se le mostrará una lista de los dispositivos que se ajusten a ese nombre.
 identifique el numero (pid) del proceso llamado USB-daemon.
 
 ```
