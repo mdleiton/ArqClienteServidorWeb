@@ -6,7 +6,8 @@
 #include <mntent.h>
 #include <errno.h>
 #include <string.h>
-#define BUFFDISPOSITIVOS 100000
+#define BUFFDISPOSITIVOS 10000
+#define BUFLEN 1024
 /* lee el archivo del pendrive */
 char* leer_archivo(char* direccion, char* nombre_archivo){
 	FILE *archivo;
@@ -25,25 +26,27 @@ char* leer_archivo(char* direccion, char* nombre_archivo){
 }
 
 /*escribir archivo en el pendrive*/
-void escribir(char* direccion, char* nombre_archivo, int tamano, char* contenido){
-	int MAX=tamano;	
-	char resultado[1000];
+int escribir_archivo(char* direccion, char* nombre_archivo, int tamano, char* contenido){
+	printf("%s-%s\n",direccion,nombre_archivo );
+	char *resultado=malloc((strlen(direccion)+strlen(nombre_archivo)+1)* sizeof(char*));
+	  memset(resultado,0,strlen(direccion)+strlen(nombre_archivo)+1);
 	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
-
-    char cadena[MAX];
-    sprintf(cadena,"%s%s", cadena,contenido);
+	printf("\n%s\n",resultado );
     FILE* fichero;
-    fichero = fopen(resultado, "wt");
-    fputs(cadena, fichero);
+    fichero = fopen(resultado, "w");
+    if(fichero<=0){
+    	return 0;
+    }
+    fputs(contenido, fichero);
     fclose(fichero);
-    printf("Proceso completado");
+    return 1;
 }
 
 /* permite presentar toda la estructura de una dispositivo usb conectado a la pc*/
 void presentar_estructuraMNTENT(const struct mntent *fs){
 	printf("nodo :%s \n direccion logica :%s \n %s \n %s \n %d \n %d\n",
 		fs->mnt_fsname,  /* name of mounted filesystem(es el nodo del dispositivo) */
-		fs->mnt_dir,    /* filesystem path prefix (el directorio donde está montado.)*/
+		fs->mnt_dir,    /* filesystem path prefix (el directorio donde estÃ¡ montado.)*/
 		fs->mnt_type,	/* mount type  */
 		fs->mnt_opts,	/* mount options  */
 		fs->mnt_freq,	/* dump frequency in days */
@@ -79,7 +82,7 @@ const char* direccionDispositivo(const char *direccion_fisica){
 	if (fp == NULL) {
 		return "\"str_error\":\"ERROR: Al intentar abrir el fichero: /etc/mtab que contiene la direccion logico de los disp USB\"";
 	}
-	/* que leerá UNA linea del mtab, y les devolverá una estructura:*/
+	/* que leerÃ¡ UNA linea del mtab, y les devolverÃ¡ una estructura:*/
 	while ((fs = getmntent(fp)) != NULL){
 		/* resulta que direccion_fisica no contiene un numero al final que indica la particion correspondiente
 		en caso de solo poseer una sola particion posee el numero 1 (esto es lo mas comun para un dispositivo usb)*/
@@ -114,7 +117,7 @@ char* enumerar_disp_alm_masivo(struct udev* udev){
 		const char* ruta = udev_list_entry_get_name(entrada);
 		struct udev_device* scsi = udev_device_new_from_syspath(udev, ruta);
 		
-		//obtenemos la información pertinente del dispositivo
+		//obtenemos la informaciÃ³n pertinente del dispositivo
 		struct udev_device* block = obtener_hijo(udev, scsi, "block");
 		struct udev_device* scsi_disk = obtener_hijo(udev, scsi, "scsi_disk");
 
@@ -126,7 +129,7 @@ char* enumerar_disp_alm_masivo(struct udev* udev){
 			if(strstr(validarerror, "str_error")!=NULL ){
 				return (char *)validarerror;
 			}
-			n=sprintf(concat_str, "{\"nodo\":\"%s\", \"nombre\":\" \",\"montaje\":\"%s\",\"Vendor:idProduct\":\"%s:%s\",\"scsi\":\"%s\"}\n", 
+			n=sprintf(concat_str, "{\"nodo\":\"%s\", \"nombre\":\" \",\"montaje\":\"%s\",\"Vendor:idProduct\":\"%s:%s\",\"scsi\":\"%s\"}", 
 				nodo,
 				direccionDispositivo(nodo),
 				udev_device_get_sysattr_value(usb, "idVendor"),
@@ -160,7 +163,7 @@ char* Dispositivo(char *direccion_fisica){
 	if (fp == NULL) {
 		return "\"str_error\":\"ERROR: Al intentar abrir el fichero: /etc/mtab que contiene la direccion logico de los disp USB\"";
 	}
-	/* que leerá UNA linea del mtab, y les devolverá una estructura:*/
+	/* que leerÃ¡ UNA linea del mtab, y les devolverÃ¡ una estructura:*/
 	while ((fs = getmntent(fp)) != NULL){
 		/* resulta que direccion_fisica no contiene un numero al final que indica la particion correspondiente
 		en caso de solo poseer una sola particion posee el numero 1 (esto es lo mas comun para un dispositivo usb)*/
@@ -171,4 +174,23 @@ char* Dispositivo(char *direccion_fisica){
 	}
 	endmntent(fp);
 	return  "no se encuentra montado dicho dispositivo";
+}
+
+
+char* tokenizarescribir(char* solicitud){
+ 	char* lista[6];
+	const char delimitadores[2] = "|";
+	char *token;
+	token = strtok(solicitud, delimitadores);
+	int i=0;
+	while( token != NULL ) {
+		lista[i]=token;
+		printf("%d:%s\n",i,token );
+		i++;
+	  token = strtok(NULL, delimitadores);
+	}
+	escribir_archivo(lista[5],lista[0],atoi(lista[1]),lista[3]);
+	char *concat_str = malloc(BUFLEN* sizeof(char*));
+	sprintf(concat_str, "{\"solicitud\":\"%s\", \"nombre\":\" %s\",\"nombre_archivo\":\"%s\",",lista[2],lista[4],lista[0]); 
+	return concat_str;
 }
