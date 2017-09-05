@@ -461,10 +461,14 @@ struct USBlista* asignarnombre(char * solicitud){
   return NULL;
 }
 
-
-/*MHD_Connection *connection es dada por libmicrohttpd daemon para mantener requerida inf relacionada a la conexion*/
+/*
+megafuncion que se encarga de procesar cada de una de las solicitudes que reciba el servidorweb.
+a su vez se encarga de procesar y redireccionar la solicitud al daemon y luego recibir la respuesta ,
+ esta respuesta procesarla y enviar al cliente.
+*/
 int answer_to_connection (void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version,
                           const char *upload_data, size_t *upload_data_size, void **con_cls){
+  
   //variables usadas para todo tipo de solicitud
   char* jsonresp=malloc(BUFFERING*sizeof(char *));
   memset(jsonresp,0,BUFFERING);
@@ -495,7 +499,9 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
     return enviar_respuesta (connection, jsonresp,505);
   }
 
+  //procesando solicitudes validas 
 
+  //solicitud listar dispositivos
   if (0 == strcmp (method,MHD_HTTP_METHOD_GET)  && !strncasecmp(url, "/listar_dispositivos", 19)){
     sprintf(solicitud, "%s-%s",method,"listar_dispositivos");
     printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
@@ -507,17 +513,19 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
        return enviar_respuesta (connection, jsonresp,400); 
     }else{
       if(strlen(resp)<=1){
-      sprintf(jsonresp,"{\"solicitud\": \"listar_dispositivos\", \"dispositivos\": [%s ], \n"
+        sprintf(jsonresp,"{\"solicitud\": \"listar_dispositivos\", \"dispositivos\": [%s ], \n"
                       "\"status\": \"0\", \"str_error\" :\"no existen dispositivos actualmente conectados\" }",resp);
        return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK); 
-     }else{
+      }else{
        sprintf(jsonresp,"{\"solicitud\": \"listar_dispositivos\", \"dispositivos\": [%s ], \n"
                       "\"status\": \"0\", \"str_error\" : 0}",resp);
-       return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
-     }
+       tokenizarsolicitud(resp);
+       iterarlistado(usblista);
+      return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
+      }
     }
-     //solicitud nombrar_dispositivo
-  }else if (0 == strcmp (method, "POST") && !strncasecmp(url, "/nombrar_dispositivo", 17)){
+  }//solicitud nombrar_dispositivo
+  else if (0 == strcmp (method, "POST") && !strncasecmp(url, "/nombrar_dispositivo", 17)){
     int i,r;
     struct manejoColaJson *cola = NULL;
     cola = (struct manejoColaJson*)*con_cls;
@@ -570,7 +578,45 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
       }   
     }
   }//solicitud escribir_archivo
-    else{
+  else if (0 == strcmp (method, "POST") && !strncasecmp(url, "/escribir_archivo", 17)){
+    int i,r;
+    struct manejoColaJson *cola = NULL;
+    cola = (struct manejoColaJson*)*con_cls;
+    if(cola == NULL) {
+      cola = malloc(sizeof(struct manejoColaJson));
+      cola->info = 0;
+      *con_cls = cola;
+      return MHD_YES;
+    }
+    if(*upload_data_size != 0) {
+      cola->stringjson= malloc(*upload_data_size + 1);
+      strncpy(cola->stringjson, upload_data, *upload_data_size);
+      *upload_data_size = 0;
+      return MHD_YES;
+    }else {
+      printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
+      MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
+      printf ("obteniendo json con información........\n");
+      char * solicitud=procesandojsonEscribir(cola->stringjson);
+      if(strstr(solicitud, "str_error")!=NULL){
+        sprintf(jsonresp,"{\"solicitud\": \"escribir_dispositivo\", \n"
+                      "\"status\": \"-1 \", %s }",solicitud);
+          return enviar_respuesta (connection, jsonresp,404); 
+      }
+      printf ("\n\ncompleto procesamiento json.... enviando al daemon........\n");
+      char *respuestadaemon=init_cliente(solicitud);
+      if(strstr(respuestadaemon, "str_error")==NULL){
+        //no hay errores desde el daemon el daemon me devuelve el json hasta sin los campos status , ni str_error,sin coma
+        sprintf(jsonresp,"%s,\"status\": \"0\", \"str_error\" : 0}",respuestadaemon);
+        return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
+        }else{
+          sprintf(jsonresp,"{\"solicitud\": \"escribir_dispositivo\", \n"
+                      "\"status\": \"-1 \",%s }",respuestadaemon);
+          return enviar_respuesta (connection, jsonresp,400); 
+        }
+    }
+  }//sino ninguna de las solicitudes anteriores debe retorna mensaje que no existe 
+  else{
       //404 Not Found
       printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
       MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
