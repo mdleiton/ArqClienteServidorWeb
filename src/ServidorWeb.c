@@ -1,3 +1,4 @@
+/*si alguien esta viendo el repositorio por favor dejar un star EN EL repositorio XD. manana a las 10 mas o menos actualizo XD*/
 #include <sys/types.h>
 #ifndef _WIN32
 #include <sys/select.h>
