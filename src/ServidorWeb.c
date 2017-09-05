@@ -465,11 +465,37 @@ struct USBlista* asignarnombre(char * solicitud){
 /*MHD_Connection *connection es dada por libmicrohttpd daemon para mantener requerida inf relacionada a la conexion*/
 int answer_to_connection (void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version,
                           const char *upload_data, size_t *upload_data_size, void **con_cls){
-  //procesando los tipos de solicitudes
+  //variables usadas para todo tipo de solicitud
   char* jsonresp=malloc(BUFFERING*sizeof(char *));
   memset(jsonresp,0,BUFFERING);
   char* solicitud=malloc(BUFFERING*sizeof(char *));
   memset(solicitud,0,BUFFERING);
+
+  //procesando los tipos de solicitudes
+
+  //solicitudes por metodo o versiones invalidas
+
+  //filtrando solo solicitudes validas
+  if (0 == strcmp (method,"PUT")  || 0 == strcmp (method,"DELETE") || 0 == strcmp (method,"HEAD") || 0 == strcmp (method,"OPTIONS")){
+    //501 Not Implemented
+    printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
+    MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
+    char * resp="\"str_error\":\"ERROR: 501 Not Implemented\"";
+    sprintf(jsonresp,"{\"solicitud\": \"%s\", \n"
+             "\"status\": \"-1\", %s }",url,resp);
+    return enviar_respuesta (connection, jsonresp,501);
+  }
+  if (0 != strcmp (version,"HTTP/1.1")){
+    //505 HTTP Version Not Supported
+    printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
+    MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
+    char * resp="\"str_error\":\"ERROR:505 HTTP Version Not Supported\"";
+    sprintf(jsonresp,"{\"solicitud\": \"%s\", \n"
+             "\"status\": \"-1 \", %s }",url,resp);
+    return enviar_respuesta (connection, jsonresp,505);
+  }
+
+  
   if (0 == strcmp (method,MHD_HTTP_METHOD_GET)  && !strncasecmp(url, "/listar_dispositivos", 19)){
     sprintf(solicitud, "%s-%s",method,"listar_dispositivos");
     printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
