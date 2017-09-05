@@ -495,7 +495,7 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
     return enviar_respuesta (connection, jsonresp,505);
   }
 
-  
+
   if (0 == strcmp (method,MHD_HTTP_METHOD_GET)  && !strncasecmp(url, "/listar_dispositivos", 19)){
     sprintf(solicitud, "%s-%s",method,"listar_dispositivos");
     printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
@@ -519,30 +519,58 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
      //solicitud nombrar_dispositivo
   }else if (0 == strcmp (method, "POST") && !strncasecmp(url, "/nombrar_dispositivo", 17)){
     int i,r;
-    if(upload_data==NULL){
+    struct manejoColaJson *cola = NULL;
+    cola = (struct manejoColaJson*)*con_cls;
+    if(cola == NULL) {
+      cola = malloc(sizeof(struct manejoColaJson));
+      cola->info = 0;
+      *con_cls = cola;
       return MHD_YES;
     }
-    if(upload_data!=NULL){
-      iterar(nombrados);
+    if(*upload_data_size != 0) {
+      cola->stringjson= malloc(*upload_data_size + 1);
+      strncpy(cola->stringjson, upload_data, *upload_data_size);
+      *upload_data_size = 0;
+      return MHD_YES;
+    }else {
       printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
+      iterar(nombrados);
       MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
       printf ("obteniendo json con información............\n");
-      char * resp=procesandojsonnombrar(upload_data);
-      sprintf(solicitud, "%s-%s","obtenerdireccion",resp);
-      char *respuesta=init_cliente(solicitud);
-      if(strstr(respuesta, "no se encuentra")!=NULL){
-        sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \n"
-                    "\"status\": \"-1 \", %s}",respuesta);
-        return enviar_respuesta (connection, jsonresp,400); 
+      sprintf(solicitud, "%s-%s","GET","listar_dispositivos");
+      char *respuestadaemon=init_cliente(solicitud);
+      if(strstr(respuestadaemon, "str_error")==NULL && strlen(respuestadaemon)>=2){
+        tokenizarsolicitud(respuestadaemon);
+        char * resp=procesandojsonnombrar(cola->stringjson);
+        if(resp!=NULL){
+          char *ss=malloc(BUFFERING*sizeof(char *));
+          sprintf(ss, "%s-%s","obtenerdireccion",resp);
+          struct USBlista *usb2=malloc(sizeof(struct USBlista));
+          usb2=asignarnombre(ss);
+          nombrados[elementos-1]->direccion_logica=usb2->montaje;
+          iterar(nombrados);
+          sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \"nombre\":\"%s\" , \n"
+                        "\"nodo\":\"%s\" ,\"status\": \"0\", \"str_error\" : 0}",nombrados[elementos-1]->nombre,nombrados[elementos-1]->direccion_fisica);
+          return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
+        }else{
+          sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \n"
+                      "\"status\": \"-1 \",\"str_error\" :\"error : formato json erroneo \" }");
+          return enviar_respuesta (connection, jsonresp,400); 
+        }
       }else{
-        nombrados[elementos-1]->direccion_logica=respuesta;
-        iterar(nombrados);
-        sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \"nombre\":\"%s\" , \n"
-                      "\"nodo\":\"%s\" ,\"status\": \"0\", \"str_error\" : 0}",respuesta,respuesta);
-        return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
-      }
+        if(strlen(respuestadaemon)>=2){
+          sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \n"
+                      "\"status\": \"-1 \", %s}",respuestadaemon);
+          return enviar_respuesta (connection, jsonresp,400); 
+        }else{
+          sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \n"
+                      "\"status\": \"-1 \",\"str_error\" :\"no existen dispositivos actualmente conectados\" }");
+          return enviar_respuesta (connection, jsonresp,400); 
+        }
+      }   
     }
-    }else{
+  }//solicitud escribir_archivo
+    else{
       //404 Not Found
       printf ("\nNueva  %s solicitud en  %s con  version %s \n", method, url, version);
       MHD_get_connection_values (connection, MHD_HEADER_KIND, iterar_encabezado,NULL);
