@@ -555,11 +555,18 @@ int answer_to_connection (void *cls, struct MHD_Connection *connection, const ch
           sprintf(ss, "%s-%s","obtenerdireccion",resp);
           struct USBlista *usb2=malloc(sizeof(struct USBlista));
           usb2=asignarnombre(ss);
+          if(usb2!=NULL){
           nombrados[elementos-1]->direccion_logica=usb2->montaje;
           iterar(nombrados);
           sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \"nombre\":\"%s\" , \n"
                         "\"nodo\":\"%s\" ,\"status\": \"0\", \"str_error\" : 0}",nombrados[elementos-1]->nombre,nombrados[elementos-1]->direccion_fisica);
           return enviar_respuesta (connection, jsonresp, MHD_HTTP_OK);
+          }else{
+            printf("No existe un dispositivo conectado con ese nodo");
+             sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \"nombre\":\"%s\" , \n"
+                        "\"nodo\":\"%s\" ,\"status\": \"-1\", \"str_error\" :\"No existe un dispositivo conectado con ese nodo  \"}",nombrados[elementos-1]->nombre,nombrados[elementos-1]->direccion_fisica);
+          return enviar_respuesta (connection, jsonresp, 404);
+          }
         }else{
           sprintf(jsonresp,"{\"solicitud\": \"nombrar_dispositivo\", \n"
                       "\"status\": \"-1 \",\"str_error\" :\"error : formato json erroneo \" }");
