@@ -91,7 +91,9 @@ void escuchandoSolicitudesClientes(){
 			char* respuesta=malloc(BUFLEN*sizeof(char *));
 			 memset(respuesta,0,BUFLEN);
 			respuesta=tokenizarescribir(cadenaLarga);
-			send(clfd,respuesta,BUFLEN,0);
+			sleep(1);
+			send(clfd,respuesta,strlen(respuesta),0);
+
 			close(clfd);
 		}
 		close(clfd);

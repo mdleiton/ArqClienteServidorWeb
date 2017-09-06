@@ -52,11 +52,10 @@ int main(void) {
 	}
 
 	/* descriptores standard deben ser cerrados (medida de seguridad) */
-/*
+
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-*/
 	/* proceso daemon */
 	/* bucle infinito del daemon */
 	/* aqui responder las solicitudes que pida el webserver*/

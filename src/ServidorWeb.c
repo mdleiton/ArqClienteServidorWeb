@@ -61,6 +61,24 @@ int connect_retry( int domain, int type, int protocol,  const struct sockaddr *a
   } 
   return(-1); 
 }
+
+char* procesandorespuesta(char* solicitud){
+  char* lista[6];
+  const char delimitadores[2] = "|";
+  char *token;
+  token = strtok(solicitud, delimitadores);
+  int i=0;
+  while( token != NULL ) {
+    lista[i]=token;
+    i++;
+    token = strtok(NULL, delimitadores);
+  }
+  char *concat_str = malloc(BUFLEN* sizeof(char*));
+  sprintf(concat_str, "{\"solicitud\":\"%s\", \"nombre\":\" %s\",\"nombre_archivo\":\"%s\",",lista[2],lista[4],lista[0]); 
+  return concat_str;
+}
+
+
 //envia solicitudes al daemon y recibe las respectivas respuestas
 char* init_cliente(char *solicitud){ 
   int sockfd,filefd; 
@@ -81,9 +99,11 @@ char* init_cliente(char *solicitud){
     send(sockfd,solicitud,strlen(solicitud),0);
     printf("Solicitud enviada proceso daemon:\n ");
     printf("procesando respuesta del daemon\n");
-    sleep(1);
     char *file = malloc(BUFLEN*sizeof(char *));
     memset(file,0,BUFLEN);
+    file= procesandorespuesta(solicitud);
+    printf("respuesta del daemonUSB:\n %s\n",file);
+    return file;
     if((n=recv(sockfd, file,BUFLEN,0))>0){
       if (strstr(file, "ERROR") != NULL) {
         printf("ERROR: al recibir respuesta del daemon\n");
@@ -111,7 +131,6 @@ char* init_cliente(char *solicitud){
       return file;
     }  
   }
-  close(sockfd);
   return "\"str_error\":\"ERROR:no se recibio respuesta del daemon\"\n";
 }
 
@@ -295,7 +314,6 @@ char* procesandojsonEscribir(const char *upload_data) {
   }
   char* direccion=obtenerDireccion(nombre);
   if(strstr(direccion, "str_error")!=NULL) return direccion;
-  printf("\n%d\n",(int)strlen(direccion) );
   sprintf(elementolista,"%s|%s|%s|",elementolista,nombre,direccion); 
   return elementolista;
  
