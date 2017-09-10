@@ -18,7 +18,7 @@
 #include <mntent.h>
 #include "Monitor.h"
 #define BUFLEN 1024 
-#define BUFFERING 10000
+#define BUFFERING 1000000
 #define QLEN 50 
 
 #ifndef HOST_NAME_MAX 
@@ -73,8 +73,8 @@ void escuchandoSolicitudesClientes(){
 			close(clfd);
 			continue;
 		} 
-	    char *solicitud = malloc(BUFLEN*sizeof(char *));
-		recv(clfd, solicitud, BUFLEN, 0);
+	    char *solicitud = malloc(BUFFERING*sizeof(char *));
+		recv(clfd, solicitud, BUFFERING, 0);
 		printf("%s\n", solicitud);
 	  	//tratamiento tipo de solicitud
 	  	if ((strstr(solicitud, "GET") != NULL) && (strstr(solicitud, "listar_dispositivos") != NULL)) {
@@ -84,16 +84,21 @@ void escuchandoSolicitudesClientes(){
 			char* lista=enumerar_disp_alm_masivo(udeva);
 		    send(clfd,lista,strlen(lista),0);
 		    close(clfd);
-		}else if((strstr(solicitud, "escribir") != NULL) ){
-			char* cadenaLarga=malloc(BUFFERING*sizeof(char *));
-			 memset(cadenaLarga,0,BUFFERING);
-			recv(clfd, cadenaLarga,BUFFERING, 0);
-			char* respuesta=malloc(BUFLEN*sizeof(char *));
-			 memset(respuesta,0,BUFLEN);
-			respuesta=tokenizarescribir(cadenaLarga);
-			sleep(1);
+		}else if((strstr(solicitud, "escribir_archivo") != NULL) ){
+			char* respuesta=tokenizarescribir(solicitud);
+			int num=strlen(respuesta);
+			char*casa=malloc(sizeof(char*)*5);
+			sprintf(casa,"%d",num);
+			send(clfd,casa,strlen(casa),0);
+///	usleep(3456);
 			send(clfd,respuesta,strlen(respuesta),0);
-
+			close(clfd);
+		}
+		else if((strstr(solicitud, "leer_archivo") != NULL) ){
+			char* respuesta=malloc(BUFFERING*sizeof(char *));
+			memset(respuesta,0,BUFFERING);
+			respuesta=tokenizarleer(solicitud);
+			send(clfd,respuesta,strlen(respuesta),0);
 			close(clfd);
 		}
 		close(clfd);

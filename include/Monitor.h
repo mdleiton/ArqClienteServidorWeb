@@ -5,4 +5,7 @@ void direccionDispositivo(const char *direccion_fisica);
 void escuchandoSolicitudesClientes();
 char* Dispositivo(char *direccion_fisica);
 char* tokenizarescribir(char* solicitud);
-int escribir_archivo(char* direccion, char* nombre_archivo, int tamano, char* contenido);
+char* tokenizarleer(char* solicitud);
+char* escribir_archivo(char* direccion, char* nombre_archivo, int tamano, char* contenido);
+char* leer_archivo(char* direccion, char* nombre_archivo);
+

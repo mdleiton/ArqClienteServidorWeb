@@ -7,17 +7,19 @@
 #include <errno.h>
 #include <string.h>
 #define BUFFDISPOSITIVOS 10000
+#define BUFFERING 1000000
 #define BUFLEN 1024
 /* lee el archivo del pendrive */
 char* leer_archivo(char* direccion, char* nombre_archivo){
 	FILE *archivo;
 	int caracter;
 	char resultado[1000];
-	char* texto_final=NULL;
+	char* texto_final=malloc(BUFFERING*sizeof(char*));
 	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
+	printf("%s\n",resultado );
 	archivo = fopen(resultado,"r");
 	if (archivo == NULL){
-            printf("\nError de apertura del archivo. \n\n");
+        return "\"str_error\":\"PROBLEMAS AL INTENTAR ABRIR EL ARCHIVO. QUIZAS NO EXISTA DICHO ARCHIVO \"";
     }else{
         while((caracter = fgetc(archivo)) != EOF) sprintf(texto_final,"%s%c",texto_final,caracter);
 	}
@@ -26,20 +28,18 @@ char* leer_archivo(char* direccion, char* nombre_archivo){
 }
 
 /*escribir archivo en el pendrive*/
-int escribir_archivo(char* direccion, char* nombre_archivo, int tamano, char* contenido){
-	printf("%s-%s\n",direccion,nombre_archivo );
+char* escribir_archivo(char* direccion, char* nombre_archivo, int tamano, char* contenido){
 	char *resultado=malloc((strlen(direccion)+strlen(nombre_archivo)+1)* sizeof(char*));
-	  memset(resultado,0,strlen(direccion)+strlen(nombre_archivo)+1);
+	memset(resultado,0,strlen(direccion)+strlen(nombre_archivo)+1);
 	sprintf(resultado,"%s/%s", direccion,nombre_archivo);
-	printf("\n%s\n",resultado );
     FILE* fichero;
     fichero = fopen(resultado, "w");
     if(fichero<=0){
-    	return 0;
+    	return "\"str_error\":\"PROBLEMAS AL INTENTAR ABRIR EL ARCHIVO. QUIZAS NO EXISTA DICHO ARCHIVO \"";
     }
     fputs(contenido, fichero);
     fclose(fichero);
-    return 1;
+    return NULL;
 }
 
 /* permite presentar toda la estructura de una dispositivo usb conectado a la pc*/
@@ -189,8 +189,35 @@ char* tokenizarescribir(char* solicitud){
 		i++;
 	  token = strtok(NULL, delimitadores);
 	}
-	escribir_archivo(lista[5],lista[0],atoi(lista[1]),lista[3]);
 	char *concat_str = malloc(BUFLEN* sizeof(char*));
+	char *respuesta=escribir_archivo(lista[5],lista[0],atoi(lista[1]),lista[3]);
+	if(respuesta!=NULL){
+	sprintf(concat_str, " \"nombre\":\" %s\",\"nombre_archivo\":\"%s\",%s,\"status\":\"-1\"",lista[4],lista[0],respuesta); 
+	}else{	
 	sprintf(concat_str, "{\"solicitud\":\"%s\", \"nombre\":\" %s\",\"nombre_archivo\":\"%s\",",lista[2],lista[4],lista[0]); 
+	}
+	return concat_str;
+}
+
+char* tokenizarleer(char* solicitud){
+ 	char* lista[4];
+	const char delimitadores[2] = "|";
+	char *token;
+	token = strtok(solicitud, delimitadores);
+	int i=0;
+	while( token != NULL ) {
+		lista[i]=token;
+		printf("%d:%s\n",i,token );
+		i++;
+	  token = strtok(NULL, delimitadores);
+	}
+	char *concat_str = malloc(BUFFERING* sizeof(char*));
+	char* contenido=leer_archivo(lista[3],lista[0]);
+	printf("%s\n",contenido );
+	if(strstr(contenido, "str_error")!=NULL){
+	 	sprintf(concat_str, " \"nombre\":\" %s\",\"nombre_archivo\":\"%s\",%s,\"status\":\"-1\"",lista[2],lista[0],contenido); 
+	}else{
+		sprintf(concat_str, "{\"solicitud\":\"%s\", \"nombre\":\" %s\",\"nombre_archivo\":\"%s\",\"contenido\":\"%s\",\"tamano_contenido\":\"%d\"",lista[1],lista[2],lista[0],contenido,(int)strlen(contenido)); 
+	}
 	return concat_str;
 }

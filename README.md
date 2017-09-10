@@ -103,7 +103,7 @@ python ./src/cliente.py 8889 GET leer_archivo david21 comoserproenC.txt
 ```	
 
 
-* Escribir archivo. 
+* Escribir archivo.  ******
 Permite crear y escribir un archivo/fichero en un dispositivo USB nombrado previamente. Se debe especifica el fichero que se quiere escribir.
 ```
 python ./src/cliente.py <puerto|8889> POST escribir_archivo <nombre usb> <nombre archivo>
@@ -112,6 +112,8 @@ ejemplo:
 ```
 python ./src/cliente.py 8889 POST escribir_archivo david21 programador.txt
 ```	
+
+**** este tipo de solicitud presenta cierto problemas. se recomienda en cada de caiga del servidor. generar de nuevo los ejecutables(make) y luego ejecutar  el servidorweb
 
 Adicional a esto existe un script clientep.py que permite verificar otro tipos de solicitudes y sus respectivas validacion de parte del servidor.En caso que lo requieran.
 

@@ -56,6 +56,7 @@ int main(void) {
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
+
 	/* proceso daemon */
 	/* bucle infinito del daemon */
 	/* aqui responder las solicitudes que pida el webserver*/
