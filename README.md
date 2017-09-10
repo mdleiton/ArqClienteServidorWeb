@@ -71,6 +71,7 @@ python ./bin/cliente.py <puerto| 8889> <metodo> <tipo solicitud> <arg 1> <arg 2>
 
 
 * Listar dispositivos
+
 Permite obtener una lista detallada de todos los dispositivos USB conectados
 ```
 python ./src/cliente.py <puerto|8889> GET listar_dispositivos
@@ -81,6 +82,7 @@ python ./src/cliente.py 8889 GET listar_dispositivos
 ```	
 
 * Nombrar dispositivo
+
 Permite asignar un nombre a un particular dispositivo USB para manejarlo de una mejor manera en futuras solicitudes. 
 ```
 python ./src/cliente.py <puerto|8889> POST nombrar_dispositivo <nodo> <nombre>
@@ -104,6 +106,7 @@ python ./src/cliente.py 8889 GET leer_archivo david21 comoserproenC.txt
 
 
 * Escribir archivo.  ******
+
 Permite crear y escribir un archivo/fichero en un dispositivo USB nombrado previamente. Se debe especifica el fichero que se quiere escribir.
 ```
 python ./src/cliente.py <puerto|8889> POST escribir_archivo <nombre usb> <nombre archivo>
